@@ -52,8 +52,8 @@ export default async function EventPage({ params }: { params: { id: string } }) 
         <div className="p-6">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <span className={`badge ${CATEGORY_COLORS[event.category]} mb-2`}>
-                {CATEGORY_LABELS[event.category]}
+              <span className={`badge ${(CATEGORY_COLORS as any)[event.category]} mb-2`}>
+                {(CATEGORY_LABELS as any)[event.category]}
               </span>
               <h1 className="text-2xl font-semibold text-gray-900">{event.title}</h1>
             </div>
