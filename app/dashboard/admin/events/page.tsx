@@ -59,7 +59,7 @@ export default async function AdminEventsPage() {
                   </td>
                   <td className="p-4 text-sm text-gray-500">{event.location}</td>
                   <td className="p-4">
-                    <span className="text-xs text-gray-600">{CATEGORY_LABELS[event.category]}</span>
+                    <span className="text-xs text-gray-600">{CATEGORY_LABELS[event.category as EventCategory]}</span>
                   </td>
                   <td className="p-4 text-sm text-gray-500">{count} / {event.max_attendees}</td>
                   <td className="p-4">
