@@ -11,11 +11,11 @@ export async function middleware(request: NextRequest) {
       cookies: {
         getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet: any[]) {
-          cookiesToSet.forEach(({ name, value }) =>
+          cookiesToSet.forEach(({ name, value }: any) =>
             request.cookies.set(name, value)
           )
           supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value, options }: any) =>
             supabaseResponse.cookies.set(name, value, options)
           )
         },
@@ -26,14 +26,17 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
-  // Routes publiques
+  if (pathname === '/') {
+    if (user) return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/auth/login', request.url))
+  }
+
   if (pathname.startsWith('/auth')) {
     if (user) return NextResponse.redirect(new URL('/dashboard', request.url))
     return supabaseResponse
   }
 
-  // Routes protégées
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/api/')) {
+  if (pathname.startsWith('/dashboard')) {
     if (!user) return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
@@ -41,5 +44,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*', '/api/events/:path*', '/api/users/:path*'],
+  matcher: ['/', '/dashboard/:path*', '/auth/:path*'],
 }
