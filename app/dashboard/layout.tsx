@@ -7,27 +7,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  if (!user) redirect('/auth/login')
-
-const { data: profile } = await supabase
-  .from('profiles')
-  .select('*')
-  .eq('id', user?.id ?? '')
-  .single()
-
-if (!profile) redirect('/auth/login')
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user!.id)
     .single()
 
   if (!profile || profile.status !== 'active') {
-    await supabase.auth.signOut()
-    redirect('/auth/login?error=not_active')
+    redirect('/auth/login')
   }
 
-  // Unread notifications count
   const { count: unreadCount } = await supabase
     .from('notifications')
     .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id)
+    .eq('user_id', user!.id)
     .eq('is_read', false)
 
   return (
