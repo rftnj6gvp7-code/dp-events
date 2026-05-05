@@ -126,3 +126,4 @@ export default async function EventPage({ params }: { params: { id: string } }) 
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

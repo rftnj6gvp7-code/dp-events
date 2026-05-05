@@ -73,3 +73,4 @@ export default async function NotificationsPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'
