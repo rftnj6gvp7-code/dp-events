@@ -7,10 +7,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
+  if (!user) redirect('/auth/login')
+
+const { data: profile } = await supabase
+  .from('profiles')
+  .select('*')
+  .eq('id', user?.id ?? '')
+  .single()
+
+if (!profile) redirect('/auth/login')
     .single()
 
   if (!profile || profile.status !== 'active') {
