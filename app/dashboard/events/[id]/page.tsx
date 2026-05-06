@@ -50,6 +50,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
     .single()
 
   const isAdmin = currentProfile?.role === 'admin'
+const isPast = new Date(`${event.date}T${event.time}`) < new Date()
   const isRegistered = registrations?.some(r => r.user_id === user?.id) || false
   const count = registrations?.length || 0
   const isFull = count >= event.max_attendees
