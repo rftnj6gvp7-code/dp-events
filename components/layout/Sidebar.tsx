@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
-import { Calendar, Bell, Users, LogOut, LayoutGrid } from 'lucide-react'
+import { Calendar, Bell, Users, LogOut, LayoutGrid, BarChart2 } from 'lucide-react'
 import clsx from 'clsx'
 
 interface Props { profile: Profile; unreadCount: number }
@@ -24,6 +24,7 @@ export default function Sidebar({ profile, unreadCount }: Props) {
     { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
     ...(isAdmin ? [
       { href: '/dashboard/admin/events', label: 'Gérer les events', icon: LayoutGrid },
+      { href: '/dashboard/admin/stats', label: 'Statistiques', icon: BarChart2 },
       { href: '/dashboard/admin/users', label: 'Utilisateurs', icon: Users },
     ] : []),
   ]
@@ -32,7 +33,6 @@ export default function Sidebar({ profile, unreadCount }: Props) {
 
   return (
     <>
-      {/* Sidebar desktop */}
       <aside className="hidden md:flex w-60 bg-white border-r border-gray-100 flex-col h-full shrink-0">
         <div className="p-4 border-b border-gray-100">
           <div className="flex items-center gap-2">
@@ -69,7 +69,7 @@ export default function Sidebar({ profile, unreadCount }: Props) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{profile.full_name}</p>
-              <p className="text-xs text-gray-400 capitalize">{profile.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</p>
+              <p className="text-xs text-gray-400">{profile.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</p>
             </div>
           </div>
           <button onClick={logout}
@@ -80,23 +80,21 @@ export default function Sidebar({ profile, unreadCount }: Props) {
         </div>
       </aside>
 
-{/* Header mobile */}
-<div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-  <div className="flex items-center gap-2">
-    <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
-    <span className="font-semibold text-base tracking-tight">DP Events</span>
-  </div>
-  <div className="flex items-center gap-2">
-    {unreadCount > 0 && (
-      <span className="bg-brand-600 text-white text-xs rounded-full px-1.5 py-0.5">{unreadCount}</span>
-    )}
-    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
-      {initials}
-    </div>
-  </div>
-</div>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
+          <span className="font-semibold text-base tracking-tight">DP Events</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <span className="bg-brand-600 text-white text-xs rounded-full px-1.5 py-0.5">{unreadCount}</span>
+          )}
+          <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
+            {initials}
+          </div>
+        </div>
+      </div>
 
-      {/* Bottom nav mobile */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 flex">
         {navItems.map(item => {
           const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
