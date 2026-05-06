@@ -108,3 +108,24 @@ export async function sendEventCancelledEmail(
     `)
   })
 }
+
+export async function sendEventReminderEmail(
+  to: string,
+  name: string,
+  event: { title: string; date: string; time: string; location: string; id: string }
+) {
+  await resend.emails.send({
+    from: FROM, to,
+    subject: `⏰ Rappel : ${event.title} demain !`,
+    html: baseTemplate(`
+      <p>Bonjour <strong>${name}</strong>,</p>
+      <p>Rappel : vous êtes inscrit à un événement <strong>demain</strong> !</p>
+      <div style="background:#eff6ff;border-radius:8px;padding:16px;margin:16px 0;">
+        <h2 style="margin:0 0 8px;color:#003F8A;font-size:18px;">${event.title}</h2>
+        <p style="margin:4px 0;color:#6b7280;font-size:14px;">📅 ${event.date} à ${event.time.slice(0,5)}</p>
+        <p style="margin:4px 0;color:#6b7280;font-size:14px;">📍 ${event.location}</p>
+      </div>
+      <a href="${SITE_URL}/dashboard/events/${event.id}" class="btn">Voir l'événement</a>
+    `)
+  })
+}
