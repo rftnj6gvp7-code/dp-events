@@ -9,6 +9,8 @@ import Link from 'next/link'
 import RegisterButton from '@/components/events/RegisterButton'
 import WaitlistButton from '@/components/events/WaitlistButton'
 import ExportButton from '@/components/events/ExportButton'
+import PhotoGallery from '@/components/events/PhotoGallery'
+import PhotoUpload from '@/components/events/PhotoUpload'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,6 +37,19 @@ export default async function EventPage({ params }: { params: { id: string } }) 
     .eq('event_id', event.id)
     .order('position', { ascending: true })
 
+  const { data: photos } = await supabase
+    .from('event_photos')
+    .select('*')
+    .eq('event_id', event.id)
+    .order('created_at', { ascending: true })
+
+  const { data: currentProfile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user!.id)
+    .single()
+
+  const isAdmin = currentProfile?.role === 'admin'
   const isRegistered = registrations?.some(r => r.user_id === user?.id) || false
   const count = registrations?.length || 0
   const isFull = count >= event.max_attendees
@@ -120,7 +135,6 @@ export default async function EventPage({ params }: { params: { id: string } }) 
             </div>
           )}
 
-          {/* Participants */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-gray-700">Participants ({count})</h2>
@@ -153,9 +167,8 @@ export default async function EventPage({ params }: { params: { id: string } }) 
             )}
           </div>
 
-          {/* Liste d'attente */}
           {waitlistCount > 0 && (
-            <div>
+            <div className="mb-6">
               <h2 className="text-sm font-semibold text-gray-700 mb-3">
                 ⏳ Liste d'attente ({waitlistCount})
               </h2>
@@ -173,6 +186,9 @@ export default async function EventPage({ params }: { params: { id: string } }) 
               </div>
             </div>
           )}
+
+          {isAdmin && <PhotoUpload eventId={event.id} />}
+          <PhotoGallery photos={photos || []} />
         </div>
       </div>
     </div>
