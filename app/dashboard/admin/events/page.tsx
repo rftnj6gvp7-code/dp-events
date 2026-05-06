@@ -1,21 +1,37 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
-import { CATEGORY_LABELS } from '@/types'
+import { fr, enUS, de } from 'date-fns/locale'
+import { CATEGORY_LABELS_I18N } from '@/types'
 import EventFormModal from '@/components/admin/EventFormModal'
 import DeleteEventButton from '@/components/admin/DeleteEventButton'
 import ExportEventsButton from '@/components/admin/ExportEventsButton'
 import ImportEventsButton from '@/components/admin/ImportEventsButton'
 import Link from 'next/link'
+import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
+
+const DATE_LOCALES: Record<string, any> = { fr, en: enUS, de, lu: fr }
+
+const TRANSLATIONS: Record<string, any> = {
+  fr: { title: 'Gestion des événements', events: 'événement(s)', newEvent: 'Nouvel événement', export: 'Exporter', import: 'Importer CSV/Excel', noEvents: 'Aucun événement créé.', cancelled: 'Annulé', edit: 'Modifier', delete: 'Suppr.' },
+  en: { title: 'Event Management', events: 'event(s)', newEvent: 'New Event', export: 'Export', import: 'Import CSV/Excel', noEvents: 'No events created.', cancelled: 'Cancelled', edit: 'Edit', delete: 'Delete' },
+  de: { title: 'Veranstaltungsverwaltung', events: 'Veranstaltung(en)', newEvent: 'Neue Veranstaltung', export: 'Exportieren', import: 'CSV/Excel importieren', noEvents: 'Keine Veranstaltungen erstellt.', cancelled: 'Abgesagt', edit: 'Bearbeiten', delete: 'Löschen' },
+  lu: { title: 'Evenementer verwalten', events: 'Evenement(er)', newEvent: 'Neit Evenement', export: 'Exportéieren', import: 'CSV/Excel importéieren', noEvents: 'Keng Evenementer erstallt.', cancelled: 'Ofgesot', edit: 'Änneren', delete: 'Läschen' },
+}
 
 export default async function AdminEventsPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user!.id).single()
   if (profile?.role !== 'admin') redirect('/dashboard')
+
+  const cookieStore = cookies()
+  const locale = cookieStore.get('locale')?.value || 'fr'
+  const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
+  const dateLocale = DATE_LOCALES[locale] || fr
+  const categoryLabels = CATEGORY_LABELS_I18N[locale] || CATEGORY_LABELS_I18N.fr
 
   const { data: events } = await supabase
     .from('events')
@@ -26,8 +42,8 @@ export default async function AdminEventsPage() {
     <div className="p-4 md:p-6">
       <div className="flex items-start justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold">Gestion des événements</h1>
-          <p className="text-sm text-gray-500 mt-1">{events?.length || 0} événement(s)</p>
+          <h1 className="text-xl md:text-2xl font-semibold">{t.title}</h1>
+          <p className="text-sm text-gray-500 mt-1">{events?.length || 0} {t.events}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap justify-end">
           <ExportEventsButton events={events || []} />
@@ -49,13 +65,13 @@ export default async function AdminEventsPage() {
                       {event.title}
                     </Link>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      {format(new Date(`${event.date}T${event.time}`), "d MMM yyyy 'à' HH'h'mm", { locale: fr })} · {event.location}
+                      {format(new Date(`${event.date}T${event.time}`), "d MMM yyyy 'à' HH'h'mm", { locale: dateLocale })} · {event.location}
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs text-gray-400">{(CATEGORY_LABELS as any)[event.category]}</span>
+                      <span className="text-xs text-gray-400">{(categoryLabels as any)[event.category]}</span>
                       <span className="text-xs text-gray-300">·</span>
-                      <span className="text-xs text-gray-400">{count}/{event.max_attendees} inscrits</span>
-                      {event.is_cancelled && <span className="badge bg-red-100 text-red-700">Annulé</span>}
+                      <span className="text-xs text-gray-400">{count}/{event.max_attendees}</span>
+                      {event.is_cancelled && <span className="badge bg-red-100 text-red-700">{t.cancelled}</span>}
                     </div>
                   </div>
                 </div>
@@ -68,7 +84,7 @@ export default async function AdminEventsPage() {
           )
         })}
         {(!events || events.length === 0) && (
-          <div className="text-center py-12 text-gray-400 text-sm">Aucun événement créé.</div>
+          <div className="text-center py-12 text-gray-400 text-sm">{t.noEvents}</div>
         )}
       </div>
     </div>
