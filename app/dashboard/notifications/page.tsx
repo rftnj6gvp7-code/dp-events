@@ -47,7 +47,7 @@ export default async function NotificationsPage() {
             {notifications?.filter(n => !n.is_read).length || 0} {t.unread}
           </p>
         </div>
-        <MarkAllReadButton userId={user!.id} />
+<MarkAllReadButton userId={user!.id} locale={locale} />
       </div>
 
       {(!notifications || notifications.length === 0) && (

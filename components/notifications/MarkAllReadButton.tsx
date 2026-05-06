@@ -2,7 +2,14 @@
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
-export default function MarkAllReadButton({ userId }: { userId: string }) {
+const LABELS: Record<string, string> = {
+  fr: 'Tout marquer lu',
+  en: 'Mark all as read',
+  de: 'Alle als gelesen markieren',
+  lu: 'All als gelies markéieren',
+}
+
+export default function MarkAllReadButton({ userId, locale = 'fr' }: { userId: string; locale?: string }) {
   const supabase = createClient()
   const router = useRouter()
 
@@ -17,7 +24,7 @@ export default function MarkAllReadButton({ userId }: { userId: string }) {
 
   return (
     <button onClick={markAll} className="btn-secondary text-sm">
-      Tout marquer lu
+      {LABELS[locale] || LABELS.fr}
     </button>
   )
 }
