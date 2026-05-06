@@ -136,7 +136,7 @@ export default async function DashboardPage({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     <div className="absolute bottom-2 left-2 flex gap-1.5">
                       <span className={`badge ${(CATEGORY_COLORS as any)[event.category]}`}>
-                        {categoryLabels[event.category]}
+{(categoryLabels as any)[event.category]}
                       </span>
                       {isRegistered && <span className="badge bg-green-500 text-white">✓</span>}
                       {isFull && !isRegistered && (
