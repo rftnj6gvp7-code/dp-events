@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { CATEGORY_LABELS } from '@/types'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -9,11 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function StatsPage() {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user!.id).single()
-  if (profile?.role !== 'admin') redirect('/dashboard')
 
-  // Stats globales
   const [
     { count: totalEvents },
     { count: totalUsers },
@@ -26,14 +21,12 @@ export default async function StatsPage() {
     supabase.from('events').select('*, registrations(count)').eq('is_cancelled', false).order('date', { ascending: true }),
   ])
 
-  // Événements triés par popularité
   const eventsByPopularity = [...(events || [])].sort((a, b) => {
     const aCount = (a.registrations as any)?.[0]?.count || 0
     const bCount = (b.registrations as any)?.[0]?.count || 0
     return bCount - aCount
   }).slice(0, 5)
 
-  // Événements à venir
   const today = new Date().toISOString().split('T')[0]
   const upcoming = (events || []).filter(e => e.date >= today).slice(0, 5)
 
@@ -51,7 +44,6 @@ export default async function StatsPage() {
         <p className="text-sm text-gray-500 mt-1">Vue d'ensemble de la plateforme</p>
       </div>
 
-      {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {stats.map(s => (
           <div key={s.label} className="card p-4 text-center">
@@ -65,7 +57,6 @@ export default async function StatsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Événements les plus populaires */}
         <div className="card p-4">
           <h2 className="text-sm font-semibold text-gray-700 mb-3">🏆 Les plus populaires</h2>
           <div className="space-y-3">
@@ -93,7 +84,6 @@ export default async function StatsPage() {
           </div>
         </div>
 
-        {/* Prochains événements */}
         <div className="card p-4">
           <h2 className="text-sm font-semibold text-gray-700 mb-3">📅 Prochains événements</h2>
           <div className="space-y-3">
