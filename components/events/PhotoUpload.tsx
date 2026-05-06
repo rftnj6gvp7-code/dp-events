@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Upload, X } from 'lucide-react'
 
-export default function PhotoUpload({ eventId, isAdmin, isPast }: { eventId: string; isAdmin: boolean; isPast: boolean }) {
+export default function PhotoUpload({ eventId, isAdmin, isPast, userId }: { 
+  eventId: string; isAdmin: boolean; isPast: boolean; userId: string 
+}) {
   const [loading, setLoading] = useState(false)
   const [caption, setCaption] = useState('')
   const [preview, setPreview] = useState<string | null>(null)
@@ -36,7 +38,12 @@ export default function PhotoUpload({ eventId, isAdmin, isPast }: { eventId: str
       const { data } = supabase.storage.from('event-covers').getPublicUrl(path)
       const { error: dbError } = await supabase
         .from('event_photos')
-        .insert({ event_id: eventId, url: data.publicUrl, caption: caption || null })
+        .insert({ 
+          event_id: eventId, 
+          url: data.publicUrl, 
+          caption: caption || null,
+          uploaded_by: userId
+        })
       if (dbError) throw dbError
       toast.success('Photo ajoutée !')
       setFile(null)

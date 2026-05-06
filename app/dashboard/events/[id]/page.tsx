@@ -193,14 +193,14 @@ export default async function EventPage({ params }: { params: { id: string } }) 
           )}
 
           {(isAdmin || (isPast && isRegistered)) && (
-            <PhotoUpload eventId={event.id} isAdmin={isAdmin} isPast={isPast} />
-          )}
+  <PhotoUpload eventId={event.id} isAdmin={isAdmin} isPast={isPast} userId={user!.id} />
+)}
           {photos && photos.length > 0 && (
             <div className="flex justify-end mb-2">
               <ExportPhotosButton photos={photos} eventTitle={event.title} />
             </div>
           )}
-          <PhotoGallery photos={photos || []} />
+<PhotoGallery photos={photos || []} currentUserId={user!.id} isAdmin={isAdmin} />
         </div>
       </div>
     </div>
