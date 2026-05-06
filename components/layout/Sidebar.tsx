@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
-import { Calendar, Bell, Users, LogOut, LayoutGrid, BarChart2 } from 'lucide-react'
+import { Calendar, Bell, Users, LogOut, LayoutGrid, BarChart2, UserCircle } from 'lucide-react'
 import clsx from 'clsx'
 
 interface Props { profile: Profile; unreadCount: number }
@@ -22,9 +22,10 @@ export default function Sidebar({ profile, unreadCount }: Props) {
   const navItems = [
     { href: '/dashboard', label: 'Événements', icon: Calendar, exact: true },
     { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
+    { href: '/dashboard/admin/stats', label: 'Statistiques', icon: BarChart2 },
+    { href: '/dashboard/profile', label: 'Mon profil', icon: UserCircle },
     ...(isAdmin ? [
       { href: '/dashboard/admin/events', label: 'Gérer les events', icon: LayoutGrid },
-      { href: '/dashboard/admin/stats', label: 'Statistiques', icon: BarChart2 },
       { href: '/dashboard/admin/users', label: 'Utilisateurs', icon: Users },
     ] : []),
   ]
