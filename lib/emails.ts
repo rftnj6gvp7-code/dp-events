@@ -129,3 +129,24 @@ export async function sendEventReminderEmail(
     `)
   })
 }
+export async function sendWaitlistAvailableEmail(
+  to: string,
+  name: string,
+  event: { title: string; date: string; time: string; location: string; id: string }
+) {
+  await resend.emails.send({
+    from: FROM, to,
+    subject: `🎉 Une place s'est libérée : ${event.title}`,
+    html: baseTemplate(`
+      <p>Bonjour <strong>${name}</strong>,</p>
+      <p>Bonne nouvelle ! Une place vient de se libérer pour l'événement suivant :</p>
+      <div style="background:#f0fdf4;border-radius:8px;padding:16px;margin:16px 0;">
+        <h2 style="margin:0 0 8px;color:#003F8A;font-size:18px;">${event.title}</h2>
+        <p style="margin:4px 0;color:#6b7280;font-size:14px;">📅 ${event.date} à ${event.time.slice(0,5)}</p>
+        <p style="margin:4px 0;color:#6b7280;font-size:14px;">📍 ${event.location}</p>
+      </div>
+      <p style="color:#6b7280;font-size:13px;">⚡ Dépêchez-vous — les places partent vite !</p>
+      <a href="${SITE_URL}/dashboard/events/${event.id}" class="btn">S'inscrire maintenant</a>
+    `)
+  })
+}
