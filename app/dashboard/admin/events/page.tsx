@@ -5,6 +5,8 @@ import { fr } from 'date-fns/locale'
 import { CATEGORY_LABELS } from '@/types'
 import EventFormModal from '@/components/admin/EventFormModal'
 import DeleteEventButton from '@/components/admin/DeleteEventButton'
+import ExportEventsButton from '@/components/admin/ExportEventsButton'
+import ImportEventsButton from '@/components/admin/ImportEventsButton'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -27,7 +29,11 @@ export default async function AdminEventsPage() {
           <h1 className="text-xl md:text-2xl font-semibold">Gestion des événements</h1>
           <p className="text-sm text-gray-500 mt-1">{events?.length || 0} événement(s)</p>
         </div>
-        <EventFormModal mode="create" />
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          <ExportEventsButton events={events || []} />
+          <ImportEventsButton />
+          <EventFormModal mode="create" />
+        </div>
       </div>
 
       <div className="space-y-3">
