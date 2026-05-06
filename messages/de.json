@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "events": "Veranstaltungen",
+    "pastEvents": "Vergangene Events",
+    "notifications": "Benachrichtigungen",
+    "stats": "Statistiken",
+    "profile": "Mein Profil",
+    "manageEvents": "Events verwalten",
+    "users": "Benutzer",
+    "logout": "Abmelden"
+  },
+  "events": {
+    "title": "Bevorstehende Veranstaltungen",
+    "subtitle": "Melden Sie sich für interessante Veranstaltungen an",
+    "noEvents": "Keine Veranstaltungen gefunden.",
+    "register": "Anmelden",
+    "unregister": "Abmelden",
+    "full": "Ausgebucht",
+    "registered": "Angemeldet",
+    "waitlist": "Warteliste",
+    "spots": "Plätze",
+    "attendees": "Teilnehmer",
+    "past": "Beendet",
+    "cancelled": "Abgesagt"
+  },
+  "filters": {
+    "all": "Alle",
+    "search": "Veranstaltung suchen...",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Diesen Monat",
+    "allDates": "Alle Daten",
+    "myEvents": "Meine Anmeldungen",
+    "list": "Liste",
+    "calendar": "Kalender"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "connect": "Einloggen",
+    "noAccount": "Noch kein Konto?",
+    "request": "Zugang beantragen",
+    "forgotPassword": "Passwort vergessen?",
+    "register": "Konto erstellen",
+    "sendReset": "Reset-Link senden",
+    "backToLogin": "← Zurück zur Anmeldung",
+    "resetPassword": "Neues Passwort",
+    "updatePassword": "Passwort aktualisieren",
+    "confirm": "Bestätigen"
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "subtitle": "Persönliche Informationen verwalten",
+    "name": "Name ändern",
+    "fullName": "Vollständiger Name",
+    "save": "Speichern",
+    "changePassword": "Passwort ändern",
+    "newPassword": "Neues Passwort",
+    "minChars": "Mindestens 6 Zeichen"
+  },
+  "admin": {
+    "manageEvents": "Veranstaltungsverwaltung",
+    "manageUsers": "Benutzerverwaltung",
+    "newEvent": "Neue Veranstaltung",
+    "addUser": "Benutzer hinzufügen",
+    "validate": "Bestätigen",
+    "reject": "Ablehnen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "pending": "Ausstehend",
+    "active": "Aktiv",
+    "rejected": "Abgelehnt",
+    "admin": "Administrator",
+    "user": "Benutzer"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "unread": "ungelesen",
+    "markAll": "Alle als gelesen markieren",
+    "none": "Keine Benachrichtigungen."
+  }
+}

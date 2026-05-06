@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "events": "Événements",
+    "pastEvents": "Événements passés",
+    "notifications": "Notifications",
+    "stats": "Statistiques",
+    "profile": "Mon profil",
+    "manageEvents": "Gérer les events",
+    "users": "Utilisateurs",
+    "logout": "Déconnexion"
+  },
+  "events": {
+    "title": "Événements à venir",
+    "subtitle": "Inscrivez-vous aux événements qui vous intéressent",
+    "noEvents": "Aucun événement trouvé.",
+    "register": "S'inscrire",
+    "unregister": "Se désinscrire",
+    "full": "Complet",
+    "registered": "Inscrit",
+    "waitlist": "Liste d'attente",
+    "spots": "places",
+    "attendees": "inscrits",
+    "past": "Terminé",
+    "cancelled": "Annulé"
+  },
+  "filters": {
+    "all": "Tous",
+    "search": "Rechercher un événement...",
+    "thisWeek": "Cette semaine",
+    "thisMonth": "Ce mois",
+    "allDates": "Toutes les dates",
+    "myEvents": "Mes inscriptions",
+    "list": "Liste",
+    "calendar": "Calendrier"
+  },
+  "auth": {
+    "login": "Connexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "connect": "Se connecter",
+    "noAccount": "Pas encore de compte ?",
+    "request": "Faire une demande",
+    "forgotPassword": "Mot de passe oublié ?",
+    "register": "Créer un compte",
+    "sendReset": "Envoyer le lien de réinitialisation",
+    "backToLogin": "← Retour à la connexion",
+    "resetPassword": "Nouveau mot de passe",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "confirm": "Confirmer"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "subtitle": "Gérer vos informations personnelles",
+    "name": "Modifier le nom",
+    "fullName": "Nom complet",
+    "save": "Enregistrer",
+    "changePassword": "Changer le mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "minChars": "6 caractères minimum"
+  },
+  "admin": {
+    "manageEvents": "Gestion des événements",
+    "manageUsers": "Gestion des utilisateurs",
+    "newEvent": "Nouvel événement",
+    "addUser": "Ajouter un utilisateur",
+    "validate": "Valider",
+    "reject": "Refuser",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "pending": "En attente",
+    "active": "Actif",
+    "rejected": "Refusé",
+    "admin": "Administrateur",
+    "user": "Utilisateur"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "non lues",
+    "markAll": "Tout marquer lu",
+    "none": "Aucune notification."
+  }
+}

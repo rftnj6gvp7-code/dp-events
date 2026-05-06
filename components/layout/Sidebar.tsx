@@ -5,14 +5,23 @@ import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 import { Calendar, Bell, Users, LogOut, LayoutGrid, BarChart2, UserCircle, History } from 'lucide-react'
 import clsx from 'clsx'
+import LanguageSwitcher from './LanguageSwitcher'
 
-interface Props { profile: Profile; unreadCount: number }
+interface Props { profile: Profile; unreadCount: number; locale: string }
 
-export default function Sidebar({ profile, unreadCount }: Props) {
+const NAV_LABELS: Record<string, Record<string, string>> = {
+  fr: { events: 'Événements', past: 'Événements passés', notif: 'Notifications', stats: 'Statistiques', profile: 'Mon profil', manage: 'Gérer les events', users: 'Utilisateurs', logout: 'Déconnexion' },
+  en: { events: 'Events', past: 'Past Events', notif: 'Notifications', stats: 'Statistics', profile: 'My Profile', manage: 'Manage Events', users: 'Users', logout: 'Logout' },
+  de: { events: 'Veranstaltungen', past: 'Vergangene Events', notif: 'Benachrichtigungen', stats: 'Statistiken', profile: 'Mein Profil', manage: 'Events verwalten', users: 'Benutzer', logout: 'Abmelden' },
+  lu: { events: 'Evenementer', past: 'Vergaangen Evenementer', notif: 'Notifikatiounen', stats: 'Statistiken', profile: 'Mäi Profil', manage: 'Evenementer verwalten', users: 'Benotzer', logout: 'Ofmellen' },
+}
+
+export default function Sidebar({ profile, unreadCount, locale }: Props) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
   const isAdmin = profile.role === 'admin'
+  const t = NAV_LABELS[locale] || NAV_LABELS.fr
 
   async function logout() {
     await supabase.auth.signOut()
@@ -20,14 +29,14 @@ export default function Sidebar({ profile, unreadCount }: Props) {
   }
 
   const navItems = [
-    { href: '/dashboard', label: 'Événements', icon: Calendar, exact: true },
-    { href: '/dashboard/past-events', label: 'Événements passés', icon: History },
-    { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: unreadCount },
-    { href: '/dashboard/admin/stats', label: 'Statistiques', icon: BarChart2 },
-    { href: '/dashboard/profile', label: 'Mon profil', icon: UserCircle },
+    { href: '/dashboard', label: t.events, icon: Calendar, exact: true },
+    { href: '/dashboard/past-events', label: t.past, icon: History },
+    { href: '/dashboard/notifications', label: t.notif, icon: Bell, badge: unreadCount },
+    { href: '/dashboard/admin/stats', label: t.stats, icon: BarChart2 },
+    { href: '/dashboard/profile', label: t.profile, icon: UserCircle },
     ...(isAdmin ? [
-      { href: '/dashboard/admin/events', label: 'Gérer les events', icon: LayoutGrid },
-      { href: '/dashboard/admin/users', label: 'Utilisateurs', icon: Users },
+      { href: '/dashboard/admin/events', label: t.manage, icon: LayoutGrid },
+      { href: '/dashboard/admin/users', label: t.users, icon: Users },
     ] : []),
   ]
 
@@ -65,19 +74,20 @@ export default function Sidebar({ profile, unreadCount }: Props) {
         </nav>
 
         <div className="p-3 border-t border-gray-100">
+          <LanguageSwitcher currentLocale={locale} />
           <div className="flex items-center gap-3 px-3 py-2 rounded-lg mb-1">
             <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{profile.full_name}</p>
-              <p className="text-xs text-gray-400">{profile.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</p>
+              <p className="text-xs text-gray-400">{isAdmin ? 'Administrateur' : 'Utilisateur'}</p>
             </div>
           </div>
           <button onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors">
             <LogOut size={15} />
-            Déconnexion
+            {t.logout}
           </button>
         </div>
       </aside>
@@ -119,7 +129,7 @@ export default function Sidebar({ profile, unreadCount }: Props) {
         <button onClick={logout}
           className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-gray-400">
           <LogOut size={20} />
-          <span className="text-[10px]">Quitter</span>
+          <span className="text-[10px]">{t.logout.split(' ')[0]}</span>
         </button>
       </nav>
     </>

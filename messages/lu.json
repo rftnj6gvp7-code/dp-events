@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "events": "Evenementer",
+    "pastEvents": "Vergaangen Evenementer",
+    "notifications": "Notifikatiounen",
+    "stats": "Statistiken",
+    "profile": "Mäi Profil",
+    "manageEvents": "Evenementer verwalten",
+    "users": "Benotzer",
+    "logout": "Ofmellen"
+  },
+  "events": {
+    "title": "Komend Evenementer",
+    "subtitle": "Mellt iech fir interessant Evenementer un",
+    "noEvents": "Keng Evenementer fonnt.",
+    "register": "Umellen",
+    "unregister": "Ofmellen",
+    "full": "Ausgebucht",
+    "registered": "Ugemellt",
+    "waitlist": "Waardelist",
+    "spots": "Plazen",
+    "attendees": "Deelhueler",
+    "past": "Ofgeschloss",
+    "cancelled": "Ofgesot"
+  },
+  "filters": {
+    "all": "All",
+    "search": "Evenement sichen...",
+    "thisWeek": "Dës Woch",
+    "thisMonth": "Dëse Mount",
+    "allDates": "All Datumer",
+    "myEvents": "Meng Umeldungen",
+    "list": "Lëscht",
+    "calendar": "Kalenner"
+  },
+  "auth": {
+    "login": "Umellen",
+    "email": "E-Mail",
+    "password": "Passwuert",
+    "connect": "Aloggen",
+    "noAccount": "Nach kee Kont?",
+    "request": "Zougank ufroen",
+    "forgotPassword": "Passwuert vergiess?",
+    "register": "Kont erstellen",
+    "sendReset": "Reset-Link schécken",
+    "backToLogin": "← Zréck zur Umeldung",
+    "resetPassword": "Neit Passwuert",
+    "updatePassword": "Passwuert aktualiséieren",
+    "confirm": "Bestätegen"
+  },
+  "profile": {
+    "title": "Mäi Profil",
+    "subtitle": "Perséinlech Informatiounen verwalten",
+    "name": "Numm änneren",
+    "fullName": "Vollstännegen Numm",
+    "save": "Späicheren",
+    "changePassword": "Passwuert änneren",
+    "newPassword": "Neit Passwuert",
+    "minChars": "Mindestens 6 Zeechen"
+  },
+  "admin": {
+    "manageEvents": "Evenementer verwalten",
+    "manageUsers": "Benotzerverwaltung",
+    "newEvent": "Neit Evenement",
+    "addUser": "Benotzer dobäisetzen",
+    "validate": "Validéieren",
+    "reject": "Refuséieren",
+    "delete": "Läschen",
+    "edit": "Änneren",
+    "pending": "Am Gaang",
+    "active": "Aktiv",
+    "rejected": "Refuséiert",
+    "admin": "Administrateur",
+    "user": "Benotzer"
+  },
+  "notifications": {
+    "title": "Notifikatiounen",
+    "unread": "ongelies",
+    "markAll": "All als gelies markéieren",
+    "none": "Keng Notifikatiounen."
+  }
+}

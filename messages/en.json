@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "events": "Events",
+    "pastEvents": "Past Events",
+    "notifications": "Notifications",
+    "stats": "Statistics",
+    "profile": "My Profile",
+    "manageEvents": "Manage Events",
+    "users": "Users",
+    "logout": "Logout"
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "subtitle": "Register for events that interest you",
+    "noEvents": "No events found.",
+    "register": "Register",
+    "unregister": "Unregister",
+    "full": "Full",
+    "registered": "Registered",
+    "waitlist": "Waitlist",
+    "spots": "spots",
+    "attendees": "attendees",
+    "past": "Ended",
+    "cancelled": "Cancelled"
+  },
+  "filters": {
+    "all": "All",
+    "search": "Search for an event...",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "allDates": "All dates",
+    "myEvents": "My registrations",
+    "list": "List",
+    "calendar": "Calendar"
+  },
+  "auth": {
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "connect": "Sign in",
+    "noAccount": "No account yet?",
+    "request": "Request access",
+    "forgotPassword": "Forgot password?",
+    "register": "Create account",
+    "sendReset": "Send reset link",
+    "backToLogin": "← Back to login",
+    "resetPassword": "New password",
+    "updatePassword": "Update password",
+    "confirm": "Confirm"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information",
+    "name": "Edit name",
+    "fullName": "Full name",
+    "save": "Save",
+    "changePassword": "Change password",
+    "newPassword": "New password",
+    "minChars": "Minimum 6 characters"
+  },
+  "admin": {
+    "manageEvents": "Event Management",
+    "manageUsers": "User Management",
+    "newEvent": "New Event",
+    "addUser": "Add User",
+    "validate": "Validate",
+    "reject": "Reject",
+    "delete": "Delete",
+    "edit": "Edit",
+    "pending": "Pending",
+    "active": "Active",
+    "rejected": "Rejected",
+    "admin": "Administrator",
+    "user": "User"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "unread",
+    "markAll": "Mark all as read",
+    "none": "No notifications."
+  }
+}

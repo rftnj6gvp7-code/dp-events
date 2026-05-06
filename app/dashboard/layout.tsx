@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/layout/Sidebar'
+import { cookies } from 'next/headers'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
@@ -23,9 +24,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('user_id', user!.id)
     .eq('is_read', false)
 
+  const cookieStore = cookies()
+  const locale = cookieStore.get('locale')?.value || 'fr'
+
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <Sidebar profile={profile} unreadCount={unreadCount || 0} />
+      <Sidebar profile={profile} unreadCount={unreadCount || 0} locale={locale} />
       <main className="flex-1 overflow-y-auto pt-16 pb-20 md:pt-0 md:pb-0">
         {children}
       </main>
