@@ -63,6 +63,13 @@ export const CATEGORY_LABELS: Record<EventCategory, string> = {
   other: 'Autre',
 }
 
+export const CATEGORY_LABELS_I18N: Record<string, Record<EventCategory, string>> = {
+  fr: { conference: 'Conférence', sport: 'Sport', workshop: 'Atelier', social: 'Social', other: 'Autre' },
+  en: { conference: 'Conference', sport: 'Sport', workshop: 'Workshop', social: 'Social', other: 'Other' },
+  de: { conference: 'Konferenz', sport: 'Sport', workshop: 'Workshop', social: 'Sozial', other: 'Andere' },
+  lu: { conference: 'Konferenz', sport: 'Sport', workshop: 'Workshop', social: 'Sozial', other: 'Aner' },
+}
+
 export const CATEGORY_COLORS: Record<EventCategory, string> = {
   conference: 'bg-purple-100 text-purple-800',
   sport: 'bg-green-100 text-green-800',

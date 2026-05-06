@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/types'
+import { CATEGORY_LABELS_I18N, CATEGORY_COLORS } from '@/types'
 import { format } from 'date-fns'
 import { fr, enUS, de } from 'date-fns/locale'
 import Link from 'next/link'
@@ -14,10 +14,10 @@ export const dynamic = 'force-dynamic'
 const DATE_LOCALES: Record<string, any> = { fr, en: enUS, de, lu: fr }
 
 const TRANSLATIONS: Record<string, any> = {
-  fr: { title: 'Événements à venir', subtitle: 'Inscrivez-vous aux événements qui vous intéressent', noEvents: 'Aucun événement trouvé.', list: 'Liste', calendar: 'Calendrier' },
-  en: { title: 'Upcoming Events', subtitle: 'Register for events that interest you', noEvents: 'No events found.', list: 'List', calendar: 'Calendar' },
-  de: { title: 'Bevorstehende Veranstaltungen', subtitle: 'Melden Sie sich für interessante Veranstaltungen an', noEvents: 'Keine Veranstaltungen gefunden.', list: 'Liste', calendar: 'Kalender' },
-  lu: { title: 'Komend Evenementer', subtitle: 'Mellt iech fir interessant Evenementer un', noEvents: 'Keng Evenementer fonnt.', list: 'Lëscht', calendar: 'Kalenner' },
+  fr: { title: 'Événements à venir', subtitle: 'Inscrivez-vous aux événements qui vous intéressent', noEvents: 'Aucun événement trouvé.', list: 'Liste', calendar: 'Calendrier', spots: 'places', full: 'Complet' },
+  en: { title: 'Upcoming Events', subtitle: 'Register for events that interest you', noEvents: 'No events found.', list: 'List', calendar: 'Calendar', spots: 'spots', full: 'Full' },
+  de: { title: 'Bevorstehende Veranstaltungen', subtitle: 'Melden Sie sich für interessante Veranstaltungen an', noEvents: 'Keine Veranstaltungen gefunden.', list: 'Liste', calendar: 'Kalender', spots: 'Plätze', full: 'Ausgebucht' },
+  lu: { title: 'Komend Evenementer', subtitle: 'Mellt iech fir interessant Evenementer un', noEvents: 'Keng Evenementer fonnt.', list: 'Lëscht', calendar: 'Kalenner', spots: 'Plazen', full: 'Ausgebucht' },
 }
 
 export default async function DashboardPage({
@@ -73,6 +73,7 @@ export default async function DashboardPage({
   }
 
   const isCalendarView = searchParams.view === 'calendar'
+  const categoryLabels = CATEGORY_LABELS_I18N[locale] || CATEGORY_LABELS_I18N.fr
 
   return (
     <div className="p-4 md:p-6">
@@ -135,12 +136,14 @@ export default async function DashboardPage({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     <div className="absolute bottom-2 left-2 flex gap-1.5">
                       <span className={`badge ${(CATEGORY_COLORS as any)[event.category]}`}>
-                        {(CATEGORY_LABELS as any)[event.category]}
+                        {categoryLabels[event.category]}
                       </span>
                       {isRegistered && <span className="badge bg-green-500 text-white">✓</span>}
-                      {isFull && !isRegistered && <span className="badge bg-red-100 text-red-700">Complet</span>}
+                      {isFull && !isRegistered && (
+                        <span className="badge bg-red-100 text-red-700">{t.full}</span>
+                      )}
                       {!isFull && spotsLeft <= 5 && !isRegistered && (
-                        <span className="badge bg-orange-100 text-orange-700">{spotsLeft} {t.spots || 'places'}</span>
+                        <span className="badge bg-orange-100 text-orange-700">{spotsLeft} {t.spots}</span>
                       )}
                     </div>
                   </div>
