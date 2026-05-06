@@ -33,8 +33,22 @@ export default function RegisterButton({ eventId, userId, isRegistered, isFull }
       .delete()
       .eq('event_id', eventId)
       .eq('user_id', userId)
-    if (error) toast.error('Erreur lors de la désinscription.')
-    else { toast.success('Désinscription confirmée.'); router.refresh() }
+
+    if (error) {
+      toast.error('Erreur lors de la désinscription.')
+      setLoading(false)
+      return
+    }
+
+    // Notifier le premier sur la liste d'attente
+    await fetch('/api/events/waitlist-notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId })
+    })
+
+    toast.success('Désinscription confirmée.')
+    router.refresh()
     setLoading(false)
   }
 
