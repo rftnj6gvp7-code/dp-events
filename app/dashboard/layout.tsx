@@ -26,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar profile={profile} unreadCount={unreadCount || 0} />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto pt-16 pb-20 md:pt-0 md:pb-0">
         {children}
       </main>
     </div>
