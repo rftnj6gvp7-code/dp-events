@@ -26,6 +26,11 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
+  // Laisser passer reset-password sans vérification
+  if (pathname.startsWith('/auth/reset-password')) {
+    return supabaseResponse
+  }
+
   if (pathname === '/') {
     if (user) return NextResponse.redirect(new URL('/dashboard', request.url))
     return NextResponse.redirect(new URL('/auth/login', request.url))
@@ -44,5 +49,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-matcher: ['/', '/dashboard/:path*', '/auth/login', '/auth/register'],
+  matcher: ['/', '/dashboard/:path*', '/auth/login', '/auth/register', '/auth/reset-password'],
 }
