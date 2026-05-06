@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
+import { fr, enUS, de } from 'date-fns/locale'
 import Link from 'next/link'
 import MarkAllReadButton from '@/components/notifications/MarkAllReadButton'
+import { cookies } from 'next/headers'
 
 const TYPE_ICONS: Record<string, string> = {
   new_event: '🎉',
@@ -12,9 +13,23 @@ const TYPE_ICONS: Record<string, string> = {
   info: 'ℹ️',
 }
 
+const TRANSLATIONS: Record<string, any> = {
+  fr: { title: 'Notifications', unread: 'non lues', markAll: 'Tout marquer lu', none: 'Aucune notification.', seeEvent: "Voir l'événement →" },
+  en: { title: 'Notifications', unread: 'unread', markAll: 'Mark all as read', none: 'No notifications.', seeEvent: 'See event →' },
+  de: { title: 'Benachrichtigungen', unread: 'ungelesen', markAll: 'Alle als gelesen markieren', none: 'Keine Benachrichtigungen.', seeEvent: 'Veranstaltung ansehen →' },
+  lu: { title: 'Notifikatiounen', unread: 'ongelies', markAll: 'All als gelies markéieren', none: 'Keng Notifikatiounen.', seeEvent: 'Evenement gesinn →' },
+}
+
+const DATE_LOCALES: Record<string, any> = { fr, en: enUS, de, lu: fr }
+
 export default async function NotificationsPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const cookieStore = cookies()
+  const locale = cookieStore.get('locale')?.value || 'fr'
+  const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
+  const dateLocale = DATE_LOCALES[locale] || fr
 
   const { data: notifications } = await supabase
     .from('notifications')
@@ -27,9 +42,9 @@ export default async function NotificationsPage() {
     <div className="p-6 max-w-2xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Notifications</h1>
+          <h1 className="text-2xl font-semibold">{t.title}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {notifications?.filter(n => !n.is_read).length || 0} non lues
+            {notifications?.filter(n => !n.is_read).length || 0} {t.unread}
           </p>
         </div>
         <MarkAllReadButton userId={user!.id} />
@@ -38,7 +53,7 @@ export default async function NotificationsPage() {
       {(!notifications || notifications.length === 0) && (
         <div className="text-center py-16 text-gray-400">
           <div className="text-4xl mb-2">🔔</div>
-          <p>Aucune notification pour le moment.</p>
+          <p>{t.none}</p>
         </div>
       )}
 
@@ -54,12 +69,12 @@ export default async function NotificationsPage() {
               {notif.body && <p className="text-xs text-gray-500 mt-0.5">{notif.body}</p>}
               <div className="flex items-center gap-3 mt-1.5">
                 <span className="text-xs text-gray-400">
-                  {format(new Date(notif.created_at), "d MMM 'à' HH'h'mm", { locale: fr })}
+                  {format(new Date(notif.created_at), "d MMM 'à' HH'h'mm", { locale: dateLocale })}
                 </span>
                 {notif.event && (
                   <Link href={`/dashboard/events/${notif.event.id}`}
                     className="text-xs text-brand-600 hover:underline">
-                    Voir l'événement →
+                    {t.seeEvent}
                   </Link>
                 )}
               </div>
@@ -73,4 +88,3 @@ export default async function NotificationsPage() {
     </div>
   )
 }
-export const dynamic = 'force-dynamic'
