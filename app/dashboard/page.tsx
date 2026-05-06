@@ -5,21 +5,42 @@ import { fr } from 'date-fns/locale'
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Clock, Users } from 'lucide-react'
+import EventFilters from '@/components/events/EventFilters'
 
-export default async function DashboardPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function DashboardPage({
+  searchParams
+}: {
+  searchParams: { category?: string; period?: string; mine?: string; q?: string }
+}) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: events } = await supabase
+  let query = supabase
     .from('events')
-    .select(`
-      *,
-      registrations(user_id),
-      registration_count:registrations(count)
-    `)
+    .select('*, registrations(user_id)')
     .eq('is_cancelled', false)
     .gte('date', new Date().toISOString().split('T')[0])
     .order('date', { ascending: true })
+
+  // Filtre catégorie
+  if (searchParams.category) {
+    query = query.eq('category', searchParams.category)
+  }
+
+  // Filtre période
+  if (searchParams.period === 'week') {
+    const nextWeek = new Date()
+    nextWeek.setDate(nextWeek.getDate() + 7)
+    query = query.lte('date', nextWeek.toISOString().split('T')[0])
+  } else if (searchParams.period === 'month') {
+    const nextMonth = new Date()
+    nextMonth.setMonth(nextMonth.getMonth() + 1)
+    query = query.lte('date', nextMonth.toISOString().split('T')[0])
+  }
+
+  const { data: events } = await query
 
   const { data: myRegistrations } = await supabase
     .from('registrations')
@@ -28,22 +49,38 @@ export default async function DashboardPage() {
 
   const myEventIds = new Set((myRegistrations || []).map(r => r.event_id))
 
+  // Filtre mes inscriptions
+  let filteredEvents = events || []
+  if (searchParams.mine === 'true') {
+    filteredEvents = filteredEvents.filter(e => myEventIds.has(e.id))
+  }
+
+  // Filtre recherche
+  if (searchParams.q) {
+    const q = searchParams.q.toLowerCase()
+    filteredEvents = filteredEvents.filter(e =>
+      e.title.toLowerCase().includes(q) || e.location.toLowerCase().includes(q)
+    )
+  }
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Événements à venir</h1>
+    <div className="p-4 md:p-6">
+      <div className="mb-5">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Événements à venir</h1>
         <p className="text-sm text-gray-500 mt-1">Inscrivez-vous aux événements qui vous intéressent</p>
       </div>
 
-      {(!events || events.length === 0) && (
+      <EventFilters />
+
+      {filteredEvents.length === 0 && (
         <div className="text-center py-16 text-gray-400">
           <div className="text-5xl mb-3">📅</div>
-          <p>Aucun événement à venir pour le moment.</p>
+          <p>Aucun événement trouvé.</p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {events?.map((event: Event & { registrations: { user_id: string }[] }) => {
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+        {filteredEvents.map((event: any) => {
           const count = event.registrations?.length || 0
           const isFull = count >= event.max_attendees
           const isRegistered = myEventIds.has(event.id)
@@ -60,8 +97,8 @@ export default async function DashboardPage() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute bottom-2 left-2 flex gap-1.5">
-                  <span className={`badge ${CATEGORY_COLORS[event.category]}`}>
-                    {CATEGORY_LABELS[event.category]}
+                  <span className={`badge ${(CATEGORY_COLORS as any)[event.category]}`}>
+                    {(CATEGORY_LABELS as any)[event.category]}
                   </span>
                   {isRegistered && <span className="badge bg-green-500 text-white">✓ Inscrit</span>}
                   {isFull && !isRegistered && <span className="badge bg-red-100 text-red-700">Complet</span>}
@@ -97,4 +134,3 @@ export default async function DashboardPage() {
     </div>
   )
 }
-export const dynamic = 'force-dynamic'
