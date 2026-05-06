@@ -12,18 +12,37 @@ const TRANSLATIONS: Record<string, any> = {
   lu: { title: 'Loggt iech an äre Kont an', email: 'E-Mail', password: 'Passwuert', connect: 'Aloggen', connecting: 'Umellen…', forgot: 'Passwuert vergiess?', noAccount: 'Nach kee Kont?', request: 'Zougank ufroen', error: 'Falsch E-Mail oder Passwuert.', resetTitle: 'Passwuert zrécksetzen', sendReset: 'Reset-Link schécken', sending: 'Schécken…', resetSent: 'Reset-E-Mail geschéckt!', resetError: 'Feeler beim Schécken.', back: '← Zréck zur Umeldung' },
 }
 
+const LANGS = [
+  { code: 'fr', label: '🇫🇷 FR' },
+  { code: 'en', label: '🇬🇧 EN' },
+  { code: 'de', label: '🇩🇪 DE' },
+  { code: 'lu', label: '🇱🇺 LU' },
+]
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [forgotMode, setForgotMode] = useState(false)
+  const [locale, setLocale] = useState(() => {
+    if (typeof window === 'undefined') return 'fr'
+    const saved = document.cookie.split(';').find(c => c.trim().startsWith('locale='))?.split('=')[1]
+    if (saved && ['fr','en','de','lu'].includes(saved)) return saved
+    const browser = navigator.language.slice(0, 2)
+    return ['fr','en','de','lu'].includes(browser) ? browser : 'fr'
+  })
   const router = useRouter()
   const supabase = createClient()
-
-  // Detect browser language
-  const browserLang = typeof window !== 'undefined' ? navigator.language.slice(0, 2) : 'fr'
-  const locale = ['fr', 'en', 'de', 'lu'].includes(browserLang) ? browserLang : 'fr'
   const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
+
+  async function changeLanguage(code: string) {
+    await fetch('/api/locale', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale: code })
+    })
+    setLocale(code)
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -109,18 +128,14 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Language selector on login page */}
         <div className="flex justify-center gap-2 mt-4">
-          {['🇫🇷 FR', '🇬🇧 EN', '🇩🇪 DE', '🇱🇺 LU'].map((lang, i) => {
-            const code = ['fr', 'en', 'de', 'lu'][i]
-            return (
-              <button key={code}
-                onClick={() => { document.cookie = `locale=${code};path=/;max-age=31536000`; window.location.reload() }}
-                className={`text-xs px-2 py-1 rounded-md font-medium ${locale === code ? 'bg-brand-600 text-white' : 'text-gray-500 hover:bg-gray-100'}`}>
-                {lang}
-              </button>
-            )
-          })}
+          {LANGS.map(lang => (
+            <button key={lang.code}
+              onClick={() => changeLanguage(lang.code)}
+              className={`text-xs px-2 py-1 rounded-md font-medium transition-colors ${locale === lang.code ? 'bg-brand-600 text-white' : 'text-gray-500 hover:bg-gray-100'}`}>
+              {lang.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>
