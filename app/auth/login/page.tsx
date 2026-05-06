@@ -30,7 +30,7 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-redirectTo: 'https://dp-events-eqhtzzv6d-bertrandcadet-6527s-projects.vercel.app/auth/reset-password',
+redirectTo: 'https://dp-events.vercel.app/auth/reset-password',
     })
     if (error) {
       toast.error('Erreur lors de l\'envoi.')
