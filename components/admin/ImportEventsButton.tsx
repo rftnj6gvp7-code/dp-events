@@ -31,7 +31,7 @@ export default function ImportEventsButton() {
 
       const events = rows.map(row => ({
         title: row['Titre'] || '',
-        date: row['Date'] || '',
+        date: row['Date'] ? String(row['Date']).slice(0, 10) : '',
         time: row['Heure'] || '09:00',
         location: row['Lieu'] || '',
         category: row['Catégorie'] || 'other',
