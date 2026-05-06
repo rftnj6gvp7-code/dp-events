@@ -1,137 +1,70 @@
 'use client'
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Profile } from '@/types'
-import { Calendar, Bell, Users, LogOut, LayoutGrid, BarChart2, UserCircle, History } from 'lucide-react'
-import clsx from 'clsx'
-import LanguageSwitcher from './LanguageSwitcher'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-interface Props { profile: Profile; unreadCount: number; locale: string }
+const LANGUAGES = [
+  { code: 'fr', flag: '🇫🇷' },
+  { code: 'en', flag: '🇬🇧' },
+  { code: 'de', flag: '🇩🇪' },
+  { code: 'lu', flag: '🇱🇺' },
+]
 
-const NAV_LABELS: Record<string, Record<string, string>> = {
-  fr: { events: 'Événements', past: 'Événements passés', notif: 'Notifications', stats: 'Statistiques', profile: 'Mon profil', manage: 'Gérer les events', users: 'Utilisateurs', logout: 'Déconnexion' },
-  en: { events: 'Events', past: 'Past Events', notif: 'Notifications', stats: 'Statistics', profile: 'My Profile', manage: 'Manage Events', users: 'Users', logout: 'Logout' },
-  de: { events: 'Veranstaltungen', past: 'Vergangene Events', notif: 'Benachrichtigungen', stats: 'Statistiken', profile: 'Mein Profil', manage: 'Events verwalten', users: 'Benutzer', logout: 'Abmelden' },
-  lu: { events: 'Evenementer', past: 'Vergaangen Evenementer', notif: 'Notifikatiounen', stats: 'Statistiken', profile: 'Mäi Profil', manage: 'Evenementer verwalten', users: 'Benotzer', logout: 'Ofmellen' },
-}
-
-export default function Sidebar({ profile, unreadCount, locale }: Props) {
-  const pathname = usePathname()
+export default function LanguageSwitcher({ currentLocale, compact = false }: { currentLocale: string; compact?: boolean }) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
-  const isAdmin = profile.role === 'admin'
-  const t = NAV_LABELS[locale] || NAV_LABELS.fr
 
-  async function logout() {
-    await supabase.auth.signOut()
-    router.push('/auth/login')
+  async function changeLanguage(locale: string) {
+    setLoading(true)
+    await fetch('/api/locale', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale })
+    })
+    setOpen(false)
+    router.refresh()
+    setLoading(false)
   }
 
-  const navItems = [
-    { href: '/dashboard', label: t.events, icon: Calendar, exact: true },
-    { href: '/dashboard/past-events', label: t.past, icon: History },
-    { href: '/dashboard/notifications', label: t.notif, icon: Bell, badge: unreadCount },
-    { href: '/dashboard/admin/stats', label: t.stats, icon: BarChart2 },
-    { href: '/dashboard/profile', label: t.profile, icon: UserCircle },
-    ...(isAdmin ? [
-      { href: '/dashboard/admin/events', label: t.manage, icon: LayoutGrid },
-      { href: '/dashboard/admin/users', label: t.users, icon: Users },
-    ] : []),
-  ]
+  const current = LANGUAGES.find(l => l.code === currentLocale) || LANGUAGES[0]
 
-  const initials = profile.full_name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
+  if (compact) {
+    return (
+      <div className="relative">
+        <button onClick={() => setOpen(!open)}
+          className="text-sm px-2 py-1 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors">
+          {current.flag}
+        </button>
+        {open && (
+          <div className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border border-gray-100 p-1 z-50 flex gap-1">
+            {LANGUAGES.map(lang => (
+              <button key={lang.code}
+                onClick={() => changeLanguage(lang.code)}
+                disabled={loading || currentLocale === lang.code}
+                className={`text-sm px-2 py-1 rounded-md transition-colors ${currentLocale === lang.code ? 'bg-brand-600 text-white' : 'hover:bg-gray-100'}`}>
+                {lang.flag}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
-    <>
-      <aside className="hidden md:flex w-60 bg-white border-r border-gray-100 flex-col h-full shrink-0">
-        <div className="p-4 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
-            <span className="font-semibold text-base tracking-tight">DP Events</span>
-          </div>
-        </div>
-
-        <nav className="flex-1 p-3 space-y-0.5">
-          {navItems.map(item => {
-            const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
-            return (
-              <Link key={item.href} href={item.href}
-                className={clsx(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                  active ? 'bg-brand-50 text-brand-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                )}>
-                <item.icon size={16} className={active ? 'text-brand-600' : 'text-gray-400'} />
-                <span className="flex-1">{item.label}</span>
-                {item.badge ? (
-                  <span className="bg-brand-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
-                    {item.badge}
-                  </span>
-                ) : null}
-              </Link>
-            )
-          })}
-        </nav>
-
-        <div className="p-3 border-t border-gray-100">
-          <LanguageSwitcher currentLocale={locale} />
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg mb-1">
-            <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
-              {initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{profile.full_name}</p>
-              <p className="text-xs text-gray-400">{isAdmin ? 'Administrateur' : 'Utilisateur'}</p>
-            </div>
-          </div>
-          <button onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors">
-            <LogOut size={15} />
-            {t.logout}
-          </button>
-        </div>
-      </aside>
-
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
-          <span className="font-semibold text-base tracking-tight">DP Events</span>
-        </div>
-        <div className="flex items-center gap-2">
-          {unreadCount > 0 && (
-            <span className="bg-brand-600 text-white text-xs rounded-full px-1.5 py-0.5">{unreadCount}</span>
-          )}
-          <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
-            {initials}
-          </div>
-        </div>
-      </div>
-
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 flex">
-        {navItems.map(item => {
-          const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
-          return (
-            <Link key={item.href} href={item.href}
-              className={clsx(
-                'flex-1 flex flex-col items-center gap-1 py-3 text-xs transition-colors relative',
-                active ? 'text-brand-600 font-medium' : 'text-gray-400'
-              )}>
-              <item.icon size={20} />
-              <span className="text-[10px]">{item.label.split(' ')[0]}</span>
-              {item.badge ? (
-                <span className="absolute top-2 right-1/4 bg-brand-600 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">
-                  {item.badge}
-                </span>
-              ) : null}
-            </Link>
-          )
-        })}
-        <button onClick={logout}
-          className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-gray-400">
-          <LogOut size={20} />
-          <span className="text-[10px]">{t.logout.split(' ')[0]}</span>
+    <div className="flex items-center gap-1 px-3 py-2">
+      {LANGUAGES.map(lang => (
+        <button key={lang.code}
+          onClick={() => changeLanguage(lang.code)}
+          disabled={loading || currentLocale === lang.code}
+          className={`text-xs px-2 py-1 rounded-md font-medium transition-colors ${
+            currentLocale === lang.code
+              ? 'bg-brand-600 text-white'
+              : 'text-gray-500 hover:bg-gray-100'
+          }`}>
+          {lang.flag} {lang.code.toUpperCase()}
         </button>
-      </nav>
-    </>
+      ))}
+    </div>
   )
 }
