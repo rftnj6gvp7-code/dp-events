@@ -7,6 +7,7 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/types'
 import { MapPin, Clock, Users, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import RegisterButton from '@/components/events/RegisterButton'
+import ExportButton from '@/components/events/ExportButton'
 
 export default async function EventPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -99,9 +100,19 @@ export default async function EventPage({ params }: { params: { id: string } }) 
           )}
 
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">
-              Participants ({count})
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+  <h2 className="text-sm font-semibold text-gray-700">
+    Participants ({count})
+  </h2>
+  <ExportButton 
+    eventTitle={event.title}
+    attendees={registrations?.map(r => ({
+      full_name: (r.profile as any)?.full_name || '',
+      email: (r.profile as any)?.email || '',
+      created_at: r.created_at,
+    })) || []}
+  />
+</div>
             {count === 0 ? (
               <p className="text-sm text-gray-400">Aucun inscrit pour le moment. Soyez le premier !</p>
             ) : (
