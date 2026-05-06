@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -8,8 +8,18 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
+  const [ready, setReady] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    // Supabase envoie le token dans le hash de l'URL
+    supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setReady(true)
+      }
+    })
+  }, [])
 
   async function handleReset(e: React.FormEvent) {
     e.preventDefault()
@@ -37,24 +47,30 @@ export default function ResetPasswordPage() {
           <p className="text-sm text-gray-500">Nouveau mot de passe</p>
         </div>
         <div className="card p-6">
-          <form onSubmit={handleReset} className="space-y-4">
-            <div>
-              <label className="label">Nouveau mot de passe</label>
-              <input className="input" type="password" value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="6 caractères minimum" required />
+          {!ready ? (
+            <div className="text-center py-4">
+              <p className="text-sm text-gray-500">Vérification du lien en cours…</p>
             </div>
-            <div>
-              <label className="label">Confirmer</label>
-              <input className="input" type="password" value={confirm}
-                onChange={e => setConfirm(e.target.value)}
-                placeholder="••••••••" required />
-            </div>
-            <button type="submit" disabled={loading}
-              className="btn-primary w-full justify-center flex">
-              {loading ? 'Mise à jour…' : 'Mettre à jour le mot de passe'}
-            </button>
-          </form>
+          ) : (
+            <form onSubmit={handleReset} className="space-y-4">
+              <div>
+                <label className="label">Nouveau mot de passe</label>
+                <input className="input" type="password" value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="6 caractères minimum" required />
+              </div>
+              <div>
+                <label className="label">Confirmer</label>
+                <input className="input" type="password" value={confirm}
+                  onChange={e => setConfirm(e.target.value)}
+                  placeholder="••••••••" required />
+              </div>
+              <button type="submit" disabled={loading}
+                className="btn-primary w-full justify-center flex">
+                {loading ? 'Mise à jour…' : 'Mettre à jour le mot de passe'}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
