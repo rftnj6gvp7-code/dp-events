@@ -8,17 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50:  '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
-        },
+       brand: {
+  50:  '#e6f0fb',
+  100: '#cce0f7',
+  200: '#99c2ef',
+  400: '#3385d6',
+  500: '#0066CC',
+  600: '#003F8A',
+  700: '#003070',
+  800: '#002058',
+  900: '#001040',
+},
       },
       fontFamily: {
         sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
