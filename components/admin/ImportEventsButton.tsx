@@ -32,7 +32,7 @@ export default function ImportEventsButton() {
       const events = rows.map(row => ({
         title: row['Titre'] || '',
         date: row['Date'] ? String(row['Date']).slice(0, 10) : '',
-        time: row['Heure'] || '09:00',
+        time: row['Heure'] ? `${String(row['Heure']).slice(0, 5)}:00` : '09:00:00',
         location: row['Lieu'] || '',
         category: row['Catégorie'] || 'other',
         max_attendees: parseInt(row['Places max']) || 30,
