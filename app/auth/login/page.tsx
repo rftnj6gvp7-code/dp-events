@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 
+const TRANSLATIONS: Record<string, any> = {
+  fr: { title: 'Connectez-vous à votre compte', email: 'Email', password: 'Mot de passe', connect: 'Se connecter', connecting: 'Connexion…', forgot: 'Mot de passe oublié ?', noAccount: 'Pas encore de compte ?', request: 'Faire une demande', error: 'Email ou mot de passe incorrect.', resetTitle: 'Réinitialiser le mot de passe', sendReset: 'Envoyer le lien', sending: 'Envoi…', resetSent: 'Email de réinitialisation envoyé !', resetError: "Erreur lors de l'envoi.", back: '← Retour à la connexion' },
+  en: { title: 'Sign in to your account', email: 'Email', password: 'Password', connect: 'Sign in', connecting: 'Signing in…', forgot: 'Forgot password?', noAccount: 'No account yet?', request: 'Request access', error: 'Incorrect email or password.', resetTitle: 'Reset password', sendReset: 'Send reset link', sending: 'Sending…', resetSent: 'Reset email sent!', resetError: 'Error sending email.', back: '← Back to login' },
+  de: { title: 'Bei Ihrem Konto anmelden', email: 'E-Mail', password: 'Passwort', connect: 'Einloggen', connecting: 'Anmelden…', forgot: 'Passwort vergessen?', noAccount: 'Noch kein Konto?', request: 'Zugang beantragen', error: 'Falsche E-Mail oder falsches Passwort.', resetTitle: 'Passwort zurücksetzen', sendReset: 'Reset-Link senden', sending: 'Senden…', resetSent: 'Reset-E-Mail gesendet!', resetError: 'Fehler beim Senden.', back: '← Zurück zur Anmeldung' },
+  lu: { title: 'Loggt iech an äre Kont an', email: 'E-Mail', password: 'Passwuert', connect: 'Aloggen', connecting: 'Umellen…', forgot: 'Passwuert vergiess?', noAccount: 'Nach kee Kont?', request: 'Zougank ufroen', error: 'Falsch E-Mail oder Passwuert.', resetTitle: 'Passwuert zrécksetzen', sendReset: 'Reset-Link schécken', sending: 'Schécken…', resetSent: 'Reset-E-Mail geschéckt!', resetError: 'Feeler beim Schécken.', back: '← Zréck zur Umeldung' },
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -13,16 +20,17 @@ export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  // Detect browser language
+  const browserLang = typeof window !== 'undefined' ? navigator.language.slice(0, 2) : 'fr'
+  const locale = ['fr', 'en', 'de', 'lu'].includes(browserLang) ? browserLang : 'fr'
+  const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      toast.error('Email ou mot de passe incorrect.')
-    } else {
-      router.push('/dashboard')
-      router.refresh()
-    }
+    if (error) toast.error(t.error)
+    else { router.push('/dashboard'); router.refresh() }
     setLoading(false)
   }
 
@@ -30,14 +38,10 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-redirectTo: 'https://dp-events.vercel.app/auth/reset-password',
+      redirectTo: 'https://dp-events.vercel.app/auth/reset-password',
     })
-    if (error) {
-      toast.error('Erreur lors de l\'envoi.')
-    } else {
-      toast.success('Email de réinitialisation envoyé !')
-      setForgotMode(false)
-    }
+    if (error) toast.error(t.resetError)
+    else { toast.success(t.resetSent); setForgotMode(false) }
     setLoading(false)
   }
 
@@ -50,7 +54,7 @@ redirectTo: 'https://dp-events.vercel.app/auth/reset-password',
             <span className="text-xl font-semibold tracking-tight">DP Events</span>
           </div>
           <p className="text-sm text-gray-500">
-            {forgotMode ? 'Réinitialiser le mot de passe' : 'Connectez-vous à votre compte'}
+            {forgotMode ? t.resetTitle : t.title}
           </p>
         </div>
 
@@ -58,53 +62,65 @@ redirectTo: 'https://dp-events.vercel.app/auth/reset-password',
           {forgotMode ? (
             <form onSubmit={handleForgot} className="space-y-4">
               <div>
-                <label className="label">Email</label>
+                <label className="label">{t.email}</label>
                 <input className="input" type="email" value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="vous@dp.lu" required />
               </div>
-              <button type="submit" disabled={loading}
-                className="btn-primary w-full justify-center flex">
-                {loading ? 'Envoi…' : 'Envoyer le lien de réinitialisation'}
+              <button type="submit" disabled={loading} className="btn-primary w-full flex justify-center">
+                {loading ? t.sending : t.sendReset}
               </button>
               <button type="button" onClick={() => setForgotMode(false)}
                 className="w-full text-center text-sm text-gray-500 hover:text-gray-700">
-                ← Retour à la connexion
+                {t.back}
               </button>
             </form>
           ) : (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="label">Email</label>
+                <label className="label">{t.email}</label>
                 <input className="input" type="email" value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="vous@dp.lu" required />
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="label mb-0">Mot de passe</label>
+                  <label className="label mb-0">{t.password}</label>
                   <button type="button" onClick={() => setForgotMode(true)}
                     className="text-xs text-brand-600 hover:underline">
-                    Mot de passe oublié ?
+                    {t.forgot}
                   </button>
                 </div>
                 <input className="input" type="password" value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••" required />
               </div>
-              <button type="submit" disabled={loading}
-                className="btn-primary w-full justify-center flex">
-                {loading ? 'Connexion…' : 'Se connecter'}
+              <button type="submit" disabled={loading} className="btn-primary w-full flex justify-center">
+                {loading ? t.connecting : t.connect}
               </button>
             </form>
           )}
 
           <p className="text-center text-sm text-gray-500 mt-4">
-            Pas encore de compte ?{' '}
+            {t.noAccount}{' '}
             <Link href="/auth/register" className="text-brand-600 hover:underline font-medium">
-              Faire une demande
+              {t.request}
             </Link>
           </p>
+        </div>
+
+        {/* Language selector on login page */}
+        <div className="flex justify-center gap-2 mt-4">
+          {['🇫🇷 FR', '🇬🇧 EN', '🇩🇪 DE', '🇱🇺 LU'].map((lang, i) => {
+            const code = ['fr', 'en', 'de', 'lu'][i]
+            return (
+              <button key={code}
+                onClick={() => { document.cookie = `locale=${code};path=/;max-age=31536000`; window.location.reload() }}
+                className={`text-xs px-2 py-1 rounded-md font-medium ${locale === code ? 'bg-brand-600 text-white' : 'text-gray-500 hover:bg-gray-100'}`}>
+                {lang}
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>
