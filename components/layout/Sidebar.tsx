@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 import { Calendar, Bell, Users, LogOut, LayoutGrid } from 'lucide-react'
 import clsx from 'clsx'
-import { usePushNotifications } from '@/hooks/usePushNotifications'
 
 interface Props { profile: Profile; unreadCount: number }
 
@@ -14,7 +13,6 @@ export default function Sidebar({ profile, unreadCount }: Props) {
   const router = useRouter()
   const supabase = createClient()
   const isAdmin = profile.role === 'admin'
-  const { supported, subscribed, subscribe } = usePushNotifications(profile.id)
 
   async function logout() {
     await supabase.auth.signOut()
@@ -89,12 +87,6 @@ export default function Sidebar({ profile, unreadCount }: Props) {
     <span className="font-semibold text-base tracking-tight">DP Events</span>
   </div>
   <div className="flex items-center gap-2">
-    {supported && !subscribed && (
-      <button onClick={subscribe}
-        className="text-xs bg-brand-600 text-white px-2 py-1 rounded-full">
-        🔔 Activer
-      </button>
-    )}
     {unreadCount > 0 && (
       <span className="bg-brand-600 text-white text-xs rounded-full px-1.5 py-0.5">{unreadCount}</span>
     )}
