@@ -39,7 +39,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
   const count = registrations?.length || 0
   const isFull = count >= event.max_attendees
   const isOnWaitlist = waitlist?.some(w => w.user_id === user?.id) || false
-  const waitlistPosition = waitlist?.findIndex(w => w.user_id === user?.id) + 1 || 0
+  const waitlistPosition = (waitlist?.findIndex(w => w.user_id === user?.id) ?? -1) + 1 || 0
   const waitlistCount = waitlist?.length || 0
 
   return (
