@@ -187,7 +187,9 @@ export default async function EventPage({ params }: { params: { id: string } }) 
             </div>
           )}
 
-          {isAdmin && <PhotoUpload eventId={event.id} />}
+{(isAdmin || (isPast && isRegistered)) && (
+  <PhotoUpload eventId={event.id} isAdmin={isAdmin} isPast={isPast} />
+)}
           <PhotoGallery photos={photos || []} />
         </div>
       </div>
