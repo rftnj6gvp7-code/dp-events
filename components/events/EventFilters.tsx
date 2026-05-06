@@ -3,25 +3,33 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback } from 'react'
 import { Search } from 'lucide-react'
 
-const CATEGORIES = [
-  { value: '', label: 'Tous' },
-  { value: 'conference', label: 'Conférence' },
-  { value: 'sport', label: 'Sport' },
-  { value: 'workshop', label: 'Atelier' },
-  { value: 'social', label: 'Social' },
-  { value: 'other', label: 'Autre' },
-]
+const TRANSLATIONS: Record<string, any> = {
+  fr: { all: 'Tous', search: 'Rechercher un événement...', week: 'Cette semaine', month: 'Ce mois', allDates: 'Toutes les dates', mine: '✓ Mes inscriptions', conference: 'Conférence', sport: 'Sport', workshop: 'Atelier', social: 'Social', other: 'Autre' },
+  en: { all: 'All', search: 'Search for an event...', week: 'This week', month: 'This month', allDates: 'All dates', mine: '✓ My registrations', conference: 'Conference', sport: 'Sport', workshop: 'Workshop', social: 'Social', other: 'Other' },
+  de: { all: 'Alle', search: 'Veranstaltung suchen...', week: 'Diese Woche', month: 'Diesen Monat', allDates: 'Alle Daten', mine: '✓ Meine Anmeldungen', conference: 'Konferenz', sport: 'Sport', workshop: 'Workshop', social: 'Sozial', other: 'Andere' },
+  lu: { all: 'All', search: 'Evenement sichen...', week: 'Dës Woch', month: 'Dëse Mount', allDates: 'All Datumer', mine: '✓ Meng Umeldungen', conference: 'Konferenz', sport: 'Sport', workshop: 'Workshop', social: 'Sozial', other: 'Aner' },
+}
 
-const PERIODS = [
-  { value: '', label: 'Toutes les dates' },
-  { value: 'week', label: 'Cette semaine' },
-  { value: 'month', label: 'Ce mois' },
-]
-
-export default function EventFilters() {
+export default function EventFilters({ locale = 'fr' }: { locale?: string }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
+
+  const CATEGORIES = [
+    { value: '', label: t.all },
+    { value: 'conference', label: t.conference },
+    { value: 'sport', label: t.sport },
+    { value: 'workshop', label: t.workshop },
+    { value: 'social', label: t.social },
+    { value: 'other', label: t.other },
+  ]
+
+  const PERIODS = [
+    { value: '', label: t.allDates },
+    { value: 'week', label: t.week },
+    { value: 'month', label: t.month },
+  ]
 
   const updateFilter = useCallback((key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -39,20 +47,17 @@ export default function EventFilters() {
 
   return (
     <div className="space-y-3">
-      {/* Recherche */}
       <div className="relative">
         <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           className="input pl-9"
-          placeholder="Rechercher un événement..."
+          placeholder={t.search}
           defaultValue={current.q}
           onChange={e => updateFilter('q', e.target.value)}
         />
       </div>
 
-      {/* Filtres */}
       <div className="flex flex-wrap gap-2">
-        {/* Catégories */}
         {CATEGORIES.map(cat => (
           <button key={cat.value}
             onClick={() => updateFilter('category', cat.value)}
@@ -67,7 +72,6 @@ export default function EventFilters() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {/* Période */}
         {PERIODS.map(p => (
           <button key={p.value}
             onClick={() => updateFilter('period', p.value)}
@@ -80,7 +84,6 @@ export default function EventFilters() {
           </button>
         ))}
 
-        {/* Mes inscriptions */}
         <button
           onClick={() => updateFilter('mine', current.mine === 'true' ? '' : 'true')}
           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
@@ -88,7 +91,7 @@ export default function EventFilters() {
               ? 'bg-green-600 text-white'
               : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-300'
           }`}>
-          ✓ Mes inscriptions
+          {t.mine}
         </button>
       </div>
     </div>

@@ -1,14 +1,24 @@
 import { createClient } from '@/lib/supabase/server'
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/types'
 import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
+import { fr, enUS, de } from 'date-fns/locale'
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Clock, Users } from 'lucide-react'
 import EventFilters from '@/components/events/EventFilters'
 import CalendarView from '@/components/events/CalendarView'
+import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
+
+const DATE_LOCALES: Record<string, any> = { fr, en: enUS, de, lu: fr }
+
+const TRANSLATIONS: Record<string, any> = {
+  fr: { title: 'Événements à venir', subtitle: 'Inscrivez-vous aux événements qui vous intéressent', noEvents: 'Aucun événement trouvé.', list: 'Liste', calendar: 'Calendrier' },
+  en: { title: 'Upcoming Events', subtitle: 'Register for events that interest you', noEvents: 'No events found.', list: 'List', calendar: 'Calendar' },
+  de: { title: 'Bevorstehende Veranstaltungen', subtitle: 'Melden Sie sich für interessante Veranstaltungen an', noEvents: 'Keine Veranstaltungen gefunden.', list: 'Liste', calendar: 'Kalender' },
+  lu: { title: 'Komend Evenementer', subtitle: 'Mellt iech fir interessant Evenementer un', noEvents: 'Keng Evenementer fonnt.', list: 'Lëscht', calendar: 'Kalenner' },
+}
 
 export default async function DashboardPage({
   searchParams
@@ -17,6 +27,11 @@ export default async function DashboardPage({
 }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const cookieStore = cookies()
+  const locale = cookieStore.get('locale')?.value || 'fr'
+  const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
+  const dateLocale = DATE_LOCALES[locale] || fr
 
   let query = supabase
     .from('events')
@@ -63,23 +78,22 @@ export default async function DashboardPage({
     <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Événements à venir</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">{t.title}</h1>
           <p className="text-sm text-gray-500 mt-1">{filteredEvents.length} événement(s)</p>
         </div>
-        {/* Toggle vue */}
         <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
           <Link href="?view=list"
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${!isCalendarView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>
-            ☰ Liste
+            ☰ {t.list}
           </Link>
           <Link href="?view=calendar"
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${isCalendarView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>
-            📅 Calendrier
+            📅 {t.calendar}
           </Link>
         </div>
       </div>
 
-      <EventFilters />
+      <EventFilters locale={locale} />
 
       {isCalendarView ? (
         <div className="mt-4">
@@ -99,7 +113,7 @@ export default async function DashboardPage({
           {filteredEvents.length === 0 && (
             <div className="text-center py-16 text-gray-400">
               <div className="text-5xl mb-3">📅</div>
-              <p>Aucun événement trouvé.</p>
+              <p>{t.noEvents}</p>
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
@@ -123,10 +137,10 @@ export default async function DashboardPage({
                       <span className={`badge ${(CATEGORY_COLORS as any)[event.category]}`}>
                         {(CATEGORY_LABELS as any)[event.category]}
                       </span>
-                      {isRegistered && <span className="badge bg-green-500 text-white">✓ Inscrit</span>}
+                      {isRegistered && <span className="badge bg-green-500 text-white">✓</span>}
                       {isFull && !isRegistered && <span className="badge bg-red-100 text-red-700">Complet</span>}
                       {!isFull && spotsLeft <= 5 && !isRegistered && (
-                        <span className="badge bg-orange-100 text-orange-700">{spotsLeft} places</span>
+                        <span className="badge bg-orange-100 text-orange-700">{spotsLeft} {t.spots || 'places'}</span>
                       )}
                     </div>
                   </div>
@@ -137,7 +151,7 @@ export default async function DashboardPage({
                     <div className="space-y-1 text-xs text-gray-500">
                       <div className="flex items-center gap-1.5">
                         <Clock size={12} />
-                        {format(new Date(`${event.date}T${event.time}`), "EEEE d MMMM 'à' HH'h'mm", { locale: fr })}
+                        {format(new Date(`${event.date}T${event.time}`), "EEEE d MMMM 'à' HH'h'mm", { locale: dateLocale })}
                       </div>
                       <div className="flex items-center gap-1.5">
                         <MapPin size={12} />
@@ -145,7 +159,7 @@ export default async function DashboardPage({
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Users size={12} />
-                        {count} / {event.max_attendees} inscrits
+                        {count} / {event.max_attendees}
                       </div>
                     </div>
                   </div>
