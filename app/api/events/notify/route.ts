@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import { sendNewEventEmail, sendEventModifiedEmail, sendEventCancelledEmail } from '@/lib/emails'
 
 const TYPE_TITLES: Record<string, (title: string) => string> = {
@@ -14,24 +14,17 @@ const TYPE_BODIES: Record<string, string> = {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
-
-  const { eventId, type } = await req.json()
   const adminClient = createAdminClient()
+  const { eventId, type } = await req.json()
 
-  // Get event
   const { data: event } = await adminClient.from('events').select('*').eq('id', eventId).single()
   if (!event) return NextResponse.json({ error: 'Événement non trouvé' }, { status: 404 })
 
-  // Get target users
   let usersQuery = adminClient.from('profiles').select('id, email, full_name').eq('status', 'active')
 
-  // For modified/cancelled: only notify registrants
   if (type === 'event_modified' || type === 'event_cancelled') {
     const { data: regs } = await adminClient.from('registrations').select('user_id').eq('event_id', eventId)
-    const ids = (regs || []).map(r => r.user_id)
+    const ids = (regs || []).map((r: any) => r.user_id)
     if (ids.length === 0) return NextResponse.json({ ok: true, notified: 0 })
     usersQuery = usersQuery.in('id', ids)
   }
@@ -39,8 +32,7 @@ export async function POST(req: NextRequest) {
   const { data: users } = await usersQuery
   if (!users || users.length === 0) return NextResponse.json({ ok: true, notified: 0 })
 
-  // Insert in-app notifications
-  const notifications = users.map(u => ({
+  const notifications = users.map((u: any) => ({
     user_id: u.id,
     title: TYPE_TITLES[type]?.(event.title) || event.title,
     body: TYPE_BODIES[type] || '',
@@ -49,9 +41,8 @@ export async function POST(req: NextRequest) {
   }))
   await adminClient.from('notifications').insert(notifications)
 
-  // Send emails (don't await to avoid timeout)
   const emailData = { title: event.title, date: event.date, time: event.time, location: event.location, id: event.id }
-  users.forEach(u => {
+  users.forEach((u: any) => {
     try {
       if (type === 'new_event') sendNewEventEmail(u.email, u.full_name, emailData).catch(() => {})
       else if (type === 'event_modified') sendEventModifiedEmail(u.email, u.full_name, emailData).catch(() => {})
