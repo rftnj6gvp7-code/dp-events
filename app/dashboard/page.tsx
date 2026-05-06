@@ -35,7 +35,7 @@ export default async function DashboardPage({
 
   let query = supabase
     .from('events')
-    .select('*, registrations(user_id)')
+    .select('*, registrations(user_id), event_photos(count)')
     .eq('is_cancelled', false)
     .gte('date', new Date().toISOString().split('T')[0])
     .order('date', { ascending: true })
@@ -123,6 +123,7 @@ export default async function DashboardPage({
               const isFull = count >= event.max_attendees
               const isRegistered = myEventIds.has(event.id)
               const spotsLeft = event.max_attendees - count
+              const photoCount = event.event_photos?.[0]?.count || 0
 
               return (
                 <Link key={event.id} href={`/dashboard/events/${event.id}`}
@@ -136,7 +137,7 @@ export default async function DashboardPage({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     <div className="absolute bottom-2 left-2 flex gap-1.5">
                       <span className={`badge ${(CATEGORY_COLORS as any)[event.category]}`}>
-{(categoryLabels as any)[event.category]}
+                        {(categoryLabels as any)[event.category]}
                       </span>
                       {isRegistered && <span className="badge bg-green-500 text-white">✓</span>}
                       {isFull && !isRegistered && (
@@ -144,6 +145,9 @@ export default async function DashboardPage({
                       )}
                       {!isFull && spotsLeft <= 5 && !isRegistered && (
                         <span className="badge bg-orange-100 text-orange-700">{spotsLeft} {t.spots}</span>
+                      )}
+                      {photoCount > 0 && (
+                        <span className="badge bg-white/80 text-gray-700">📸 {photoCount}</span>
                       )}
                     </div>
                   </div>
