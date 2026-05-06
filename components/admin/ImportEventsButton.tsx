@@ -32,16 +32,27 @@ export default function ImportEventsButton() {
       const events = rows.map(row => ({
         title: row['Titre'] || '',
         date: row['Date'] ? String(row['Date']).slice(0, 10) : '',
-        time: row['Heure'] ? `${String(row['Heure']).slice(0, 5)}:00` : '09:00:00',
+time: (() => {
+  const h = row['Heure']
+  if (!h) return '09:00:00'
+  if (typeof h === 'number') {
+    const totalMinutes = Math.round(h * 24 * 60)
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    return `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:00`
+  }
+  return `${String(h).slice(0,5)}:00`
+})(),
         location: row['Lieu'] || '',
-        category: row['Catégorie'] || 'other',
+category: ['conference','sport','workshop','social','other'].includes(row['Catégorie']) ? row['Catégorie'] : 'other',
         max_attendees: parseInt(row['Places max']) || 30,
         description: row['Description'] || null,
         color: row['Couleur'] || '#003F8A',
         is_cancelled: row['Annulé'] === 'oui',
       })).filter(e => e.title && e.date)
 
-      const { error } = await supabase.from('events').insert(events)
+const { error } = await supabase.from('events').insert(events)
+if (error) console.log('Import error:', JSON.stringify(error), 'Data:', JSON.stringify(events[0]))
 
       if (error) {
         toast.error('Erreur lors de l\'import.')
