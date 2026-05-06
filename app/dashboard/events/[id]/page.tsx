@@ -7,7 +7,10 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/types'
 import { MapPin, Clock, Users, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import RegisterButton from '@/components/events/RegisterButton'
+import WaitlistButton from '@/components/events/WaitlistButton'
 import ExportButton from '@/components/events/ExportButton'
+
+export const dynamic = 'force-dynamic'
 
 export default async function EventPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -23,15 +26,24 @@ export default async function EventPage({ params }: { params: { id: string } }) 
 
   const { data: registrations } = await supabase
     .from('registrations')
-    .select('*, profile:profiles(id, full_name, avatar_url)')
+    .select('*, profile:profiles(id, full_name, avatar_url, email)')
     .eq('event_id', event.id)
+
+  const { data: waitlist } = await supabase
+    .from('waitlist')
+    .select('*, profile:profiles(id, full_name)')
+    .eq('event_id', event.id)
+    .order('position', { ascending: true })
 
   const isRegistered = registrations?.some(r => r.user_id === user?.id) || false
   const count = registrations?.length || 0
   const isFull = count >= event.max_attendees
+  const isOnWaitlist = waitlist?.some(w => w.user_id === user?.id) || false
+  const waitlistPosition = waitlist?.findIndex(w => w.user_id === user?.id) + 1 || 0
+  const waitlistCount = waitlist?.length || 0
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-3xl mx-auto p-4 md:p-6">
       <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-5 transition-colors">
         <ArrowLeft size={15} /> Retour aux événements
       </Link>
@@ -59,12 +71,21 @@ export default async function EventPage({ params }: { params: { id: string } }) 
               <h1 className="text-2xl font-semibold text-gray-900">{event.title}</h1>
             </div>
             {!event.is_cancelled && (
-              <RegisterButton
-                eventId={event.id}
-                userId={user!.id}
-                isRegistered={isRegistered}
-                isFull={isFull}
-              />
+              <div className="shrink-0">
+                {isRegistered ? (
+                  <RegisterButton eventId={event.id} userId={user!.id} isRegistered={true} isFull={false} />
+                ) : isFull ? (
+                  <WaitlistButton
+                    eventId={event.id}
+                    userId={user!.id}
+                    isOnWaitlist={isOnWaitlist}
+                    waitlistPosition={waitlistPosition}
+                    waitlistCount={waitlistCount}
+                  />
+                ) : (
+                  <RegisterButton eventId={event.id} userId={user!.id} isRegistered={false} isFull={false} />
+                )}
+              </div>
             )}
           </div>
 
@@ -99,22 +120,21 @@ export default async function EventPage({ params }: { params: { id: string } }) 
             </div>
           )}
 
-          <div>
+          {/* Participants */}
+          <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-  <h2 className="text-sm font-semibold text-gray-700">
-    Participants ({count})
-  </h2>
-  <ExportButton 
-    eventTitle={event.title}
-    attendees={registrations?.map(r => ({
-      full_name: (r.profile as any)?.full_name || '',
-      email: (r.profile as any)?.email || '',
-      created_at: r.created_at,
-    })) || []}
-  />
-</div>
+              <h2 className="text-sm font-semibold text-gray-700">Participants ({count})</h2>
+              <ExportButton
+                eventTitle={event.title}
+                attendees={registrations?.map(r => ({
+                  full_name: (r.profile as any)?.full_name || '',
+                  email: (r.profile as any)?.email || '',
+                  created_at: r.created_at,
+                })) || []}
+              />
+            </div>
             {count === 0 ? (
-              <p className="text-sm text-gray-400">Aucun inscrit pour le moment. Soyez le premier !</p>
+              <p className="text-sm text-gray-400">Aucun inscrit pour le moment.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {registrations?.map(r => {
@@ -132,9 +152,29 @@ export default async function EventPage({ params }: { params: { id: string } }) 
               </div>
             )}
           </div>
+
+          {/* Liste d'attente */}
+          {waitlistCount > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">
+                ⏳ Liste d'attente ({waitlistCount})
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {waitlist?.map((w, i) => {
+                  const p = w.profile as any
+                  const initials = p?.full_name?.split(' ').map((ww: string) => ww[0]).join('').toUpperCase().slice(0, 2)
+                  return (
+                    <div key={w.id} className="flex items-center gap-2 bg-yellow-50 rounded-full px-3 py-1.5">
+                      <span className="text-xs text-yellow-600 font-bold">#{i + 1}</span>
+                      <span className="text-xs font-medium text-gray-700">{p?.full_name}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   )
 }
-export const dynamic = 'force-dynamic'
