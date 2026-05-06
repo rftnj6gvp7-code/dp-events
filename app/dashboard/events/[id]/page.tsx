@@ -9,6 +9,7 @@ import Link from 'next/link'
 import RegisterButton from '@/components/events/RegisterButton'
 import WaitlistButton from '@/components/events/WaitlistButton'
 import ExportButton from '@/components/events/ExportButton'
+import ExportPhotosButton from '@/components/events/ExportPhotosButton'
 import PhotoGallery from '@/components/events/PhotoGallery'
 import PhotoUpload from '@/components/events/PhotoUpload'
 
@@ -50,7 +51,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
     .single()
 
   const isAdmin = currentProfile?.role === 'admin'
-const isPast = new Date(`${event.date}T${event.time}`) < new Date()
+  const isPast = new Date(`${event.date}T${event.time}`) < new Date()
   const isRegistered = registrations?.some(r => r.user_id === user?.id) || false
   const count = registrations?.length || 0
   const isFull = count >= event.max_attendees
@@ -86,7 +87,7 @@ const isPast = new Date(`${event.date}T${event.time}`) < new Date()
               </span>
               <h1 className="text-2xl font-semibold text-gray-900">{event.title}</h1>
             </div>
-            {!event.is_cancelled && (
+            {!event.is_cancelled && !isPast && (
               <div className="shrink-0">
                 {isRegistered ? (
                   <RegisterButton eventId={event.id} userId={user!.id} isRegistered={true} isFull={false} />
@@ -102,6 +103,9 @@ const isPast = new Date(`${event.date}T${event.time}`) < new Date()
                   <RegisterButton eventId={event.id} userId={user!.id} isRegistered={false} isFull={false} />
                 )}
               </div>
+            )}
+            {isPast && (
+              <span className="badge bg-gray-100 text-gray-500 shrink-0">Terminé</span>
             )}
           </div>
 
@@ -188,9 +192,14 @@ const isPast = new Date(`${event.date}T${event.time}`) < new Date()
             </div>
           )}
 
-{(isAdmin || (isPast && isRegistered)) && (
-  <PhotoUpload eventId={event.id} isAdmin={isAdmin} isPast={isPast} />
-)}
+          {(isAdmin || (isPast && isRegistered)) && (
+            <PhotoUpload eventId={event.id} isAdmin={isAdmin} isPast={isPast} />
+          )}
+          {photos && photos.length > 0 && (
+            <div className="flex justify-end mb-2">
+              <ExportPhotosButton photos={photos} eventTitle={event.title} />
+            </div>
+          )}
           <PhotoGallery photos={photos || []} />
         </div>
       </div>
