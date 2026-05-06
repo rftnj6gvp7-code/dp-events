@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
   const { data: users } = await usersQuery
   if (!users || users.length === 0) return NextResponse.json({ ok: true, notified: 0 })
 
+  // Notifications in-app
   const notifications = users.map((u: any) => ({
     user_id: u.id,
     title: TYPE_TITLES[type]?.(event.title) || event.title,
@@ -41,6 +42,20 @@ export async function POST(req: NextRequest) {
   }))
   await adminClient.from('notifications').insert(notifications)
 
+  // Push notifications
+  const userIds = users.map((u: any) => u.id)
+  fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/push/send`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: TYPE_TITLES[type]?.(event.title) || event.title,
+      body: TYPE_BODIES[type] || '',
+      url: `/dashboard/events/${eventId}`,
+      userIds,
+    })
+  }).catch(() => {})
+
+  // Emails
   const emailData = { title: event.title, date: event.date, time: event.time, location: event.location, id: event.id }
   users.forEach((u: any) => {
     try {

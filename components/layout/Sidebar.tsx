@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 import { Calendar, Bell, Users, LogOut, LayoutGrid } from 'lucide-react'
 import clsx from 'clsx'
+import { usePushNotifications } from '@/hooks/usePushNotifications'
 
 interface Props { profile: Profile; unreadCount: number }
 
@@ -13,6 +14,7 @@ export default function Sidebar({ profile, unreadCount }: Props) {
   const router = useRouter()
   const supabase = createClient()
   const isAdmin = profile.role === 'admin'
+  const { supported, subscribed, subscribe } = usePushNotifications(profile.id)
 
   async function logout() {
     await supabase.auth.signOut()
@@ -80,21 +82,27 @@ export default function Sidebar({ profile, unreadCount }: Props) {
         </div>
       </aside>
 
-      {/* Header mobile */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
-          <span className="font-semibold text-base tracking-tight">DP Events</span>
-        </div>
-        <div className="flex items-center gap-2">
-          {unreadCount > 0 && (
-            <span className="bg-brand-600 text-white text-xs rounded-full px-1.5 py-0.5">{unreadCount}</span>
-          )}
-          <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
-            {initials}
-          </div>
-        </div>
-      </div>
+{/* Header mobile */}
+<div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+  <div className="flex items-center gap-2">
+    <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
+    <span className="font-semibold text-base tracking-tight">DP Events</span>
+  </div>
+  <div className="flex items-center gap-2">
+    {supported && !subscribed && (
+      <button onClick={subscribe}
+        className="text-xs bg-brand-600 text-white px-2 py-1 rounded-full">
+        🔔 Activer
+      </button>
+    )}
+    {unreadCount > 0 && (
+      <span className="bg-brand-600 text-white text-xs rounded-full px-1.5 py-0.5">{unreadCount}</span>
+    )}
+    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
+      {initials}
+    </div>
+  </div>
+</div>
 
       {/* Bottom nav mobile */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 flex">
