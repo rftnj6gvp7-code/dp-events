@@ -1,6 +1,6 @@
 {
   "name": "DP-Differdange Events",
-  "short_name": "DP-Differdange Events",
+  "short_name": "DP Events",
   "description": "Plateforme d'événements du Demokratesch Partei",
   "start_url": "/",
   "display": "standalone",
