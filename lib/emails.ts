@@ -18,7 +18,7 @@ function baseTemplate(content: string) {
   .footer{text-align:center;padding:16px;font-size:12px;color:#9ca3af;}
 </style></head>
 <body><div class="container">
-  <div class="header"><h1>📅 DP Events</h1></div>
+  <div class="header"><h1>📅 DP-Differdange Events</h1></div>
   <div class="body">${content}</div>
   <div class="footer">DP — École Internationale de Differdange et d'Esch-sur-Alzette</div>
 </div></body></html>`
@@ -27,10 +27,10 @@ function baseTemplate(content: string) {
 export async function sendAccountPendingEmail(to: string, name: string) {
   await resend.emails.send({
     from: FROM, to,
-    subject: 'Votre demande de compte DP Events est en cours',
+    subject: 'Votre demande de compte DP-Differdange Events est en cours',
     html: baseTemplate(`
       <p>Bonjour <strong>${name}</strong>,</p>
-      <p>Votre demande de compte sur la plateforme DP Events a bien été reçue.</p>
+      <p>Votre demande de compte sur la plateforme DP-Differdange Events a bien été reçue.</p>
       <p>Un administrateur va valider votre inscription prochainement. Vous recevrez un email de confirmation dès que votre compte sera activé.</p>
       <p style="color:#6b7280;font-size:13px;">Si vous n'avez pas fait cette demande, ignorez cet email.</p>
     `)
@@ -40,10 +40,10 @@ export async function sendAccountPendingEmail(to: string, name: string) {
 export async function sendAccountValidatedEmail(to: string, name: string) {
   await resend.emails.send({
     from: FROM, to,
-    subject: '✅ Votre compte DP Events est activé !',
+    subject: '✅ Votre compte DP-Differdange Events est activé !',
     html: baseTemplate(`
       <p>Bonjour <strong>${name}</strong>,</p>
-      <p>Bonne nouvelle ! Votre compte sur la plateforme DP Events a été <strong>validé</strong>.</p>
+      <p>Bonne nouvelle ! Votre compte sur la plateforme DP-Differdange Events a été <strong>validé</strong>.</p>
       <p>Vous pouvez maintenant vous connecter et vous inscrire aux événements.</p>
       <a href="${SITE_URL}/auth/login" class="btn">Se connecter</a>
     `)

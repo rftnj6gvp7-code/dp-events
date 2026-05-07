@@ -70,7 +70,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-3">
             <div className="w-3 h-3 rounded-full bg-brand-600" />
-            <span className="text-xl font-semibold tracking-tight">DP Events</span>
+            <span className="text-xl font-semibold tracking-tight">DP-Differdange Events</span>
           </div>
           <p className="text-sm text-gray-500">
             {forgotMode ? t.resetTitle : t.title}

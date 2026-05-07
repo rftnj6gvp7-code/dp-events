@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       try { await sendAccountValidatedEmail(email, name) } catch {}
       await adminClient.from('notifications').insert({
         user_id: userId,
-        title: 'Bienvenue sur DP Events !',
+        title: 'Bienvenue sur DP-Differdange Events !',
         body: 'Votre compte a été validé. Vous pouvez maintenant vous inscrire aux événements.',
         type: 'account_validated'
       })
