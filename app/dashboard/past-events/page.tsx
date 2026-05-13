@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/types'
+import { CATEGORY_LABELS_I18N, CATEGORY_COLORS } from '@/types'
 import { format } from 'date-fns'
 import { fr, enUS, de } from 'date-fns/locale'
 import Link from 'next/link'
@@ -33,6 +33,7 @@ export default async function PastEventsPage({
   const locale = cookieStore.get('locale')?.value || 'fr'
   const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
   const dateLocale = DATE_LOCALES[locale] || fr
+  const categoryLabels = CATEGORY_LABELS_I18N[locale] || CATEGORY_LABELS_I18N.fr
 
   const showArchived = searchParams.archived === 'true'
 
@@ -45,28 +46,28 @@ export default async function PastEventsPage({
     .order('date', { ascending: false })
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="p-4 md:p-6 dark:bg-gray-950 min-h-screen">
       <div className="flex items-start justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold">
+          <h1 className="text-xl md:text-2xl font-semibold dark:text-white">
             {showArchived ? `🗄️ ${t.archives}` : t.title}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{events?.length || 0} événement(s)</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{events?.length || 0} événement(s)</p>
         </div>
         <div className="flex gap-2">
           <Link href="/dashboard/past-events"
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!showArchived ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!showArchived ? 'bg-brand-600 text-white' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`}>
             {t.recent}
           </Link>
           <Link href="/dashboard/past-events?archived=true"
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${showArchived ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${showArchived ? 'bg-brand-600 text-white' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`}>
             {t.archives}
           </Link>
         </div>
       </div>
 
       {(!events || events.length === 0) && (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-gray-400 dark:text-gray-500">
           <div className="text-5xl mb-3">{showArchived ? '🗄️' : '📅'}</div>
           <p>{showArchived ? t.noneArchived : t.none}</p>
         </div>
@@ -78,7 +79,7 @@ export default async function PastEventsPage({
           return (
             <div key={event.id} className="card overflow-hidden group hover:shadow-md transition-shadow opacity-90 hover:opacity-100">
               <Link href={`/dashboard/events/${event.id}`}>
-                <div className="relative h-36 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                <div className="relative h-36 bg-gradient-to-br from-gray-100 dark:from-gray-800 to-gray-200 dark:to-gray-700 overflow-hidden">
                   {event.cover_url ? (
                     <Image src={event.cover_url} alt={event.title} fill className="object-cover grayscale group-hover:grayscale-0 transition-all" />
                   ) : (
@@ -87,7 +88,7 @@ export default async function PastEventsPage({
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-2 left-2 flex gap-1.5">
                     <span className={`badge ${(CATEGORY_COLORS as any)[event.category]}`}>
-                      {(CATEGORY_LABELS as any)[event.category]}
+                      {(categoryLabels as any)[event.category]}
                     </span>
                     {photoCount > 0 && (
                       <span className="badge bg-white/80 text-gray-700">
@@ -97,10 +98,10 @@ export default async function PastEventsPage({
                   </div>
                 </div>
                 <div className="p-4">
-                  <h2 className="font-semibold text-gray-900 mb-2 group-hover:text-brand-700 transition-colors line-clamp-1">
+                  <h2 className="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors line-clamp-1">
                     {event.title}
                   </h2>
-                  <div className="space-y-1 text-xs text-gray-500">
+                  <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
                     <div className="flex items-center gap-1.5">
                       <Clock size={12} />
                       {format(new Date(`${event.date}T${event.time}`), "EEEE d MMMM yyyy", { locale: dateLocale })}
