@@ -44,8 +44,8 @@ export default function Sidebar({ profile, unreadCount, locale }: Props) {
 
   return (
     <>
-      <aside className="hidden md:flex w-60 bg-white border-r border-gray-100 flex-col h-full shrink-0">
-        <div className="p-4 border-b border-gray-100">
+      <aside className="hidden md:flex w-60 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 flex-col h-full shrink-0">
+<div className="p-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
             <span className="font-semibold text-base tracking-tight">DP-Differdange Events</span>
@@ -59,7 +59,7 @@ export default function Sidebar({ profile, unreadCount, locale }: Props) {
               <Link key={item.href} href={item.href}
                 className={clsx(
                   'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                  active ? 'bg-brand-50 text-brand-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                 active ? 'bg-brand-50 dark:bg-brand-900 text-brand-700 dark:text-brand-200 font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
                 )}>
                 <item.icon size={16} className={active ? 'text-brand-600' : 'text-gray-400'} />
                 <span className="flex-1">{item.label}</span>
@@ -92,7 +92,7 @@ export default function Sidebar({ profile, unreadCount, locale }: Props) {
         </div>
       </aside>
 
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-brand-600" />
           <span className="font-semibold text-base tracking-tight">DP-Differdange Events</span>
@@ -108,7 +108,7 @@ export default function Sidebar({ profile, unreadCount, locale }: Props) {
         </div>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 flex">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 flex">
         {navItems.map(item => {
           const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
           return (
