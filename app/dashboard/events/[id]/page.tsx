@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import { fr, enUS, de } from 'date-fns/locale'
-import { CATEGORY_LABELS_I18N, CATEGORY_COLORS } from '@/types'
+import { CATEGORY_LABELS_I18N } from '@/types'
 import { MapPin, Clock, Users, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import RegisterButton from '@/components/events/RegisterButton'
@@ -23,6 +23,30 @@ const TRANSLATIONS: Record<string, any> = {
   en: { back: 'Back to events', cancelled: '❌ Event cancelled', past: 'Ended', dateTime: 'Date & time', location: 'Location', spots: 'Spots', attendees: 'attendees', description: 'Description', participants: 'Participants', noAttendees: 'No attendees yet.', waitlist: 'Waitlist', gallery: 'Gallery' },
   de: { back: 'Zurück zu Veranstaltungen', cancelled: '❌ Veranstaltung abgesagt', past: 'Beendet', dateTime: 'Datum & Uhrzeit', location: 'Ort', spots: 'Plätze', attendees: 'Teilnehmer', description: 'Beschreibung', participants: 'Teilnehmer', noAttendees: 'Noch keine Teilnehmer.', waitlist: 'Warteliste', gallery: 'Galerie' },
   lu: { back: 'Zréck zu Evenementer', cancelled: '❌ Evenement ofgesot', past: 'Ofgeschloss', dateTime: 'Datum & Zäit', location: 'Plaz', spots: 'Plazen', attendees: 'Deelhueler', description: 'Beschreiwung', participants: 'Deelhueler', noAttendees: 'Nach keng Deelhueler.', waitlist: 'Waardelist', gallery: 'Galerie' },
+}
+
+const CATEGORY_BG: Record<string, string> = {
+  conference: '#0D2545',
+  sport: '#0D2518',
+  workshop: '#1A0D35',
+  social: '#1A1530',
+  other: '#1A1A2E',
+}
+
+const CATEGORY_ACCENT: Record<string, string> = {
+  conference: '#4D9FFF',
+  sport: '#4DFF96',
+  workshop: '#B44DFF',
+  social: '#FF9F4D',
+  other: '#4DFFFF',
+}
+
+const CATEGORY_TAG: Record<string, string> = {
+  conference: 'bg-blue-900/30 text-blue-400 border border-blue-500/20',
+  sport: 'bg-green-900/30 text-green-400 border border-green-500/20',
+  workshop: 'bg-purple-900/30 text-purple-400 border border-purple-500/20',
+  social: 'bg-orange-900/30 text-orange-400 border border-orange-500/20',
+  other: 'bg-cyan-900/30 text-cyan-400 border border-cyan-500/20',
 }
 
 export default async function EventPage({ params }: { params: { id: string } }) {
@@ -74,6 +98,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
   const isOnWaitlist = waitlist?.some(w => w.user_id === user?.id) || false
   const waitlistPosition = (waitlist?.findIndex(w => w.user_id === user?.id) ?? -1) + 1 || 0
   const waitlistCount = waitlist?.length || 0
+  const cat = event.category || 'other'
 
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-6 dark:bg-gray-950 min-h-screen">
@@ -82,24 +107,36 @@ export default async function EventPage({ params }: { params: { id: string } }) 
       </Link>
 
       <div className="card overflow-hidden">
-        <div className="relative h-56 bg-gradient-to-br from-brand-100 to-brand-200 dark:from-brand-900 dark:to-brand-800">
+        <div
+          className="relative h-56 overflow-hidden"
+          style={{ backgroundColor: event.cover_url ? '#111827' : CATEGORY_BG[cat] || CATEGORY_BG.other }}
+        >
           {event.cover_url ? (
             <Image src={event.cover_url} alt={event.title} fill className="object-cover" />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-20">📅</div>
+            <>
+              <div
+                className="absolute top-0 left-0 right-0 h-0.5"
+                style={{ backgroundColor: CATEGORY_ACCENT[cat] || CATEGORY_ACCENT.other }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center opacity-5">
+                <div className="w-32 h-32 rounded-full border-2 border-white" />
+              </div>
+            </>
           )}
           {event.is_cancelled && (
             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
               <span className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold">{t.cancelled}</span>
             </div>
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
 
         <div className="p-6">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <span className={`badge ${(CATEGORY_COLORS as any)[event.category]} mb-2`}>
-                {(categoryLabels as any)[event.category]}
+              <span className={`badge mb-2 ${CATEGORY_TAG[cat] || CATEGORY_TAG.other}`}>
+                {(categoryLabels as any)[cat]}
               </span>
               <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{event.title}</h1>
             </div>
