@@ -46,14 +46,14 @@ export default function ProfileForm({ locale, currentName, currentTheme }: { loc
     setLoadingPw(false)
   }
 
-  async function handleThemeChange(newTheme: string) {
-    setTheme(newTheme)
-    const { data: { user } } = await supabase.auth.getUser()
-    await supabase.from('profiles').update({ theme: newTheme }).eq('id', user!.id)
-    document.documentElement.classList.remove('dark', 'light')
-    document.documentElement.classList.add(newTheme)
-    router.refresh()
-  }
+ async function handleThemeChange(newTheme: string) {
+  setTheme(newTheme)
+  const { data: { user } } = await supabase.auth.getUser()
+  await supabase.from('profiles').update({ theme: newTheme }).eq('id', user!.id)
+  localStorage.setItem('dp-theme', newTheme)
+  document.documentElement.classList.remove('dark', 'light')
+  document.documentElement.classList.add(newTheme)
+}
 
   return (
     <div className="p-4 md:p-6 max-w-lg">
