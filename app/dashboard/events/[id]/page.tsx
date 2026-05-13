@@ -76,13 +76,13 @@ export default async function EventPage({ params }: { params: { id: string } }) 
   const waitlistCount = waitlist?.length || 0
 
   return (
-    <div className="max-w-3xl mx-auto p-4 md:p-6">
-      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-5 transition-colors">
+    <div className="max-w-3xl mx-auto p-4 md:p-6 dark:bg-gray-950 min-h-screen">
+      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-5 transition-colors">
         <ArrowLeft size={15} /> {t.back}
       </Link>
 
       <div className="card overflow-hidden">
-        <div className="relative h-56 bg-gradient-to-br from-brand-100 to-brand-200">
+        <div className="relative h-56 bg-gradient-to-br from-brand-100 to-brand-200 dark:from-brand-900 dark:to-brand-800">
           {event.cover_url ? (
             <Image src={event.cover_url} alt={event.title} fill className="object-cover" />
           ) : (
@@ -101,7 +101,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
               <span className={`badge ${(CATEGORY_COLORS as any)[event.category]} mb-2`}>
                 {(categoryLabels as any)[event.category]}
               </span>
-              <h1 className="text-2xl font-semibold text-gray-900">{event.title}</h1>
+              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{event.title}</h1>
             </div>
             {!event.is_cancelled && !isPast && (
               <div className="shrink-0">
@@ -121,28 +121,28 @@ export default async function EventPage({ params }: { params: { id: string } }) 
               </div>
             )}
             {isPast && (
-              <span className="badge bg-gray-100 text-gray-500 shrink-0">{t.past}</span>
+              <span className="badge bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 shrink-0">{t.past}</span>
             )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-0.5">{t.dateTime}</p>
-              <p className="text-sm font-medium flex items-center gap-1.5">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-0.5">{t.dateTime}</p>
+              <p className="text-sm font-medium dark:text-gray-200 flex items-center gap-1.5">
                 <Clock size={13} className="text-brand-500" />
                 {format(new Date(`${event.date}T${event.time}`), "d MMMM yyyy 'à' HH'h'mm", { locale: dateLocale })}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-0.5">{t.location}</p>
-              <p className="text-sm font-medium flex items-center gap-1.5">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-0.5">{t.location}</p>
+              <p className="text-sm font-medium dark:text-gray-200 flex items-center gap-1.5">
                 <MapPin size={13} className="text-brand-500" />
                 {event.location}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-0.5">{t.spots}</p>
-              <p className="text-sm font-medium flex items-center gap-1.5">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-0.5">{t.spots}</p>
+              <p className="text-sm font-medium dark:text-gray-200 flex items-center gap-1.5">
                 <Users size={13} className="text-brand-500" />
                 {count} / {event.max_attendees} {t.attendees}
               </p>
@@ -151,14 +151,14 @@ export default async function EventPage({ params }: { params: { id: string } }) 
 
           {event.description && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-700 mb-2">{t.description}</h2>
-              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{event.description}</p>
+              <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t.description}</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{event.description}</p>
             </div>
           )}
 
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">{t.participants} ({count})</h2>
+              <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t.participants} ({count})</h2>
               <ExportButton
                 eventTitle={event.title}
                 attendees={registrations?.map(r => ({
@@ -169,18 +169,18 @@ export default async function EventPage({ params }: { params: { id: string } }) 
               />
             </div>
             {count === 0 ? (
-              <p className="text-sm text-gray-400">{t.noAttendees}</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">{t.noAttendees}</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {registrations?.map(r => {
                   const p = r.profile as any
                   const initials = p?.full_name?.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
                   return (
-                    <div key={r.id} className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-1.5">
-                      <div className="w-5 h-5 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold">
+                    <div key={r.id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 rounded-full px-3 py-1.5">
+                      <div className="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 flex items-center justify-center text-xs font-semibold">
                         {initials}
                       </div>
-                      <span className="text-xs font-medium text-gray-700">{p?.full_name}</span>
+                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{p?.full_name}</span>
                     </div>
                   )
                 })}
@@ -190,7 +190,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
 
           {waitlistCount > 0 && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">
+              <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 ⏳ {t.waitlist} ({waitlistCount})
               </h2>
               <div className="flex flex-wrap gap-2">
@@ -198,9 +198,9 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                   const p = w.profile as any
                   const initials = p?.full_name?.split(' ').map((ww: string) => ww[0]).join('').toUpperCase().slice(0, 2)
                   return (
-                    <div key={w.id} className="flex items-center gap-2 bg-yellow-50 rounded-full px-3 py-1.5">
-                      <span className="text-xs text-yellow-600 font-bold">#{i + 1}</span>
-                      <span className="text-xs font-medium text-gray-700">{p?.full_name}</span>
+                    <div key={w.id} className="flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-full px-3 py-1.5">
+                      <span className="text-xs text-yellow-600 dark:text-yellow-400 font-bold">#{i + 1}</span>
+                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{p?.full_name}</span>
                     </div>
                   )
                 })}
