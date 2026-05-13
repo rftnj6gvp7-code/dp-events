@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { CATEGORY_LABELS_I18N, CATEGORY_COLORS } from '@/types'
+import { CATEGORY_LABELS_I18N } from '@/types'
 import { format } from 'date-fns'
 import { fr, enUS, de } from 'date-fns/locale'
 import Link from 'next/link'
@@ -18,6 +18,30 @@ const TRANSLATIONS: Record<string, any> = {
 }
 
 const DATE_LOCALES: Record<string, any> = { fr, en: enUS, de, lu: fr }
+
+const CATEGORY_BG: Record<string, string> = {
+  conference: 'bg-[#0D2545]',
+  sport: 'bg-[#0D2518]',
+  workshop: 'bg-[#1A0D35]',
+  social: 'bg-[#1A1530]',
+  other: 'bg-[#1A1A2E]',
+}
+
+const CATEGORY_ACCENT: Record<string, string> = {
+  conference: 'bg-[#4D9FFF]',
+  sport: 'bg-[#4DFF96]',
+  workshop: 'bg-[#B44DFF]',
+  social: 'bg-[#FF9F4D]',
+  other: 'bg-[#4DFFFF]',
+}
+
+const CATEGORY_TAG: Record<string, string> = {
+  conference: 'bg-blue-900/30 text-blue-400 border border-blue-500/20',
+  sport: 'bg-green-900/30 text-green-400 border border-green-500/20',
+  workshop: 'bg-purple-900/30 text-purple-400 border border-purple-500/20',
+  social: 'bg-orange-900/30 text-orange-400 border border-orange-500/20',
+  other: 'bg-cyan-900/30 text-cyan-400 border border-cyan-500/20',
+}
 
 export default async function PastEventsPage({
   searchParams
@@ -76,22 +100,28 @@ export default async function PastEventsPage({
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {events?.map((event: any) => {
           const photoCount = event.event_photos?.[0]?.count || 0
+          const cat = event.category || 'other'
           return (
             <div key={event.id} className="card overflow-hidden group hover:shadow-md transition-shadow opacity-90 hover:opacity-100">
               <Link href={`/dashboard/events/${event.id}`}>
-                <div className="relative h-36 bg-gradient-to-br from-gray-100 dark:from-gray-800 to-gray-200 dark:to-gray-700 overflow-hidden">
+                <div className={`relative h-36 overflow-hidden ${event.cover_url ? 'bg-gray-900' : CATEGORY_BG[cat] || CATEGORY_BG.other}`}>
                   {event.cover_url ? (
                     <Image src={event.cover_url} alt={event.title} fill className="object-cover grayscale group-hover:grayscale-0 transition-all" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-20">📅</div>
+                    <>
+                      <div className={`absolute top-0 left-0 right-0 h-0.5 ${CATEGORY_ACCENT[cat] || CATEGORY_ACCENT.other}`} />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-5">
+                        <div className="w-20 h-20 rounded-full border-2 border-white" />
+                      </div>
+                    </>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-2 left-2 flex gap-1.5">
-                    <span className={`badge ${(CATEGORY_COLORS as any)[event.category]}`}>
-                      {(categoryLabels as any)[event.category]}
+                    <span className={`badge ${CATEGORY_TAG[cat] || CATEGORY_TAG.other}`}>
+                      {(categoryLabels as any)[cat]}
                     </span>
                     {photoCount > 0 && (
-                      <span className="badge bg-white/80 text-gray-700">
+                      <span className="badge bg-white/10 text-white/70">
                         <Camera size={10} className="mr-1 inline" />{photoCount}
                       </span>
                     )}
