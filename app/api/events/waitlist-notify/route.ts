@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     await adminClient.from('notifications').insert({
       user_id: w.user_id,
-      title: `🎉 Place disponible : ${event.title}`,
+      title: `Place disponible : ${event.title}`,
       body: 'Une place vient de se libérer. Inscrivez-vous vite !',
       type: 'info',
       event_id: eventId,

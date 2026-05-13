@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     await adminClient.from('notifications').insert(
       userIds.map((uid: string) => ({
         user_id: uid,
-        title: `⏰ Rappel : ${event.title} demain !`,
+        title: `Rappel : ${event.title} demain !`,
         body: `L'événement a lieu demain à ${event.time.slice(0,5)} à ${event.location}`,
         type: 'info',
         event_id: event.id,
