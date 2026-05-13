@@ -39,11 +39,11 @@ export default async function AdminEventsPage() {
     .order('date', { ascending: true })
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="p-4 md:p-6 dark:bg-gray-950 min-h-screen">
       <div className="flex items-start justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold">{t.title}</h1>
-          <p className="text-sm text-gray-500 mt-1">{events?.length || 0} {t.events}</p>
+          <h1 className="text-xl md:text-2xl font-semibold dark:text-white">{t.title}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{events?.length || 0} {t.events}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap justify-end">
           <ExportEventsButton events={events || []} />
@@ -61,17 +61,17 @@ export default async function AdminEventsPage() {
                 <div className="flex items-start gap-3 min-w-0">
                   <div className="w-3 h-3 rounded-full shrink-0 mt-1.5" style={{ backgroundColor: event.color || '#003F8A' }} />
                   <div className="min-w-0">
-                    <Link href={`/dashboard/events/${event.id}`} className="font-medium text-sm hover:text-brand-600 transition-colors block truncate">
+                    <Link href={`/dashboard/events/${event.id}`} className="font-medium text-sm dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors block truncate">
                       {event.title}
                     </Link>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                       {format(new Date(`${event.date}T${event.time}`), "d MMM yyyy 'à' HH'h'mm", { locale: dateLocale })} · {event.location}
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs text-gray-400">{(categoryLabels as any)[event.category]}</span>
-                      <span className="text-xs text-gray-300">·</span>
-                      <span className="text-xs text-gray-400">{count}/{event.max_attendees}</span>
-                      {event.is_cancelled && <span className="badge bg-red-100 text-red-700">{t.cancelled}</span>}
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{(categoryLabels as any)[event.category]}</span>
+                      <span className="text-xs text-gray-300 dark:text-gray-600">·</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{count}/{event.max_attendees}</span>
+                      {event.is_cancelled && <span className="badge bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">{t.cancelled}</span>}
                     </div>
                   </div>
                 </div>
@@ -84,7 +84,7 @@ export default async function AdminEventsPage() {
           )
         })}
         {(!events || events.length === 0) && (
-          <div className="text-center py-12 text-gray-400 text-sm">{t.noEvents}</div>
+          <div className="text-center py-12 text-gray-400 dark:text-gray-500 text-sm">{t.noEvents}</div>
         )}
       </div>
     </div>
