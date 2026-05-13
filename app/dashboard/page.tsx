@@ -76,11 +76,11 @@ export default async function DashboardPage({
   const categoryLabels = CATEGORY_LABELS_I18N[locale] || CATEGORY_LABELS_I18N.fr
 
   return (
-    <div className="p-4 md:p-6">
+<div className="p-4 md:p-6 dark:bg-gray-950 min-h-screen">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">{t.title}</h1>
-          <p className="text-sm text-gray-500 mt-1">{filteredEvents.length} événement(s)</p>
+<h1 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white">{t.title}</h1>
+<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{filteredEvents.length} événement(s)</p>
         </div>
         <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
           <Link href="?view=list"
@@ -127,7 +127,7 @@ export default async function DashboardPage({
 
               return (
                 <Link key={event.id} href={`/dashboard/events/${event.id}`}
-                  className="card overflow-hidden group hover:shadow-md transition-shadow">
+className="card overflow-hidden group hover:shadow-md transition-shadow dark:bg-gray-900 dark:border-gray-800">
                   <div className="relative h-36 bg-gradient-to-br from-brand-100 to-brand-200 overflow-hidden">
                     {event.cover_url ? (
                       <Image src={event.cover_url} alt={event.title} fill className="object-cover" />
@@ -152,10 +152,10 @@ export default async function DashboardPage({
                     </div>
                   </div>
                   <div className="p-4">
-                    <h2 className="font-semibold text-gray-900 mb-2 group-hover:text-brand-700 transition-colors line-clamp-1">
+<h2 className="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors line-clamp-1">
                       {event.title}
                     </h2>
-                    <div className="space-y-1 text-xs text-gray-500">
+<div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
                       <div className="flex items-center gap-1.5">
                         <Clock size={12} />
                         {format(new Date(`${event.date}T${event.time}`), "EEEE d MMMM 'à' HH'h'mm", { locale: dateLocale })}
