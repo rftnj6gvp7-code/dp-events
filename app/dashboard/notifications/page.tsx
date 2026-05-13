@@ -22,6 +22,8 @@ const TRANSLATIONS: Record<string, any> = {
 
 const DATE_LOCALES: Record<string, any> = { fr, en: enUS, de, lu: fr }
 
+export const dynamic = 'force-dynamic'
+
 export default async function NotificationsPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -39,19 +41,19 @@ export default async function NotificationsPage() {
     .limit(50)
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="p-6 max-w-2xl dark:bg-gray-950 min-h-screen">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">{t.title}</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-semibold dark:text-white">{t.title}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {notifications?.filter(n => !n.is_read).length || 0} {t.unread}
           </p>
         </div>
-<MarkAllReadButton userId={user!.id} locale={locale} />
+        <MarkAllReadButton userId={user!.id} locale={locale} />
       </div>
 
       {(!notifications || notifications.length === 0) && (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-gray-400 dark:text-gray-500">
           <div className="text-4xl mb-2">🔔</div>
           <p>{t.none}</p>
         </div>
@@ -60,20 +62,20 @@ export default async function NotificationsPage() {
       <div className="space-y-2">
         {notifications?.map(notif => (
           <div key={notif.id}
-            className={`card p-4 flex gap-3 ${!notif.is_read ? 'border-brand-200 bg-brand-50/30' : ''}`}>
+            className={`card p-4 flex gap-3 ${!notif.is_read ? 'border-brand-200 dark:border-brand-800 bg-brand-50/30 dark:bg-brand-900/10' : ''}`}>
             <span className="text-xl mt-0.5">{TYPE_ICONS[notif.type] || 'ℹ️'}</span>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm ${!notif.is_read ? 'font-medium text-gray-900' : 'text-gray-700'}`}>
+              <p className={`text-sm ${!notif.is_read ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                 {notif.title}
               </p>
-              {notif.body && <p className="text-xs text-gray-500 mt-0.5">{notif.body}</p>}
+              {notif.body && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{notif.body}</p>}
               <div className="flex items-center gap-3 mt-1.5">
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-400 dark:text-gray-500">
                   {format(new Date(notif.created_at), "d MMM 'à' HH'h'mm", { locale: dateLocale })}
                 </span>
                 {notif.event && (
                   <Link href={`/dashboard/events/${notif.event.id}`}
-                    className="text-xs text-brand-600 hover:underline">
+                    className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
                     {t.seeEvent}
                   </Link>
                 )}
