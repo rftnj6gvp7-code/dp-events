@@ -12,7 +12,7 @@
   .dark body {
     @apply bg-gray-950 text-gray-100;
   }
-  .dark {
+  .dark, .dark body, .dark #__next, .dark main {
     @apply bg-gray-950;
     color-scheme: dark;
   }
