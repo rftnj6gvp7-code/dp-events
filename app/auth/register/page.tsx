@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -11,15 +11,38 @@ const TRANSLATIONS: Record<string, any> = {
   lu: { title: 'Kont erstellen', subtitle: 'Är Ufro gëtt vun engem Administrateur validéiert', fullName: 'Vollstännegen Numm', email: 'Institutionell E-Mail', password: 'Passwuert', confirm: 'Passwuert bestätegen', submit: 'Ufro schécken', sending: 'Schécken…', alreadyAccount: 'Hutt Dir schonn e Kont?', login: 'Aloggen', mismatch: 'Passwierder stëmmen net iwwereen.', tooShort: 'Passwuert muss mindestens 6 Zeechen laang sinn.', namePlaceholder: 'Virnumm Numm', pendingTitle: 'Ufro geschéckt!', pendingText: 'En Administrateur wäert Är Ufro préiwen. Dir kritt eng E-Mail wann äre Kont aktivéiert ass.', backToLogin: 'Zréck zur Umeldung' },
 }
 
+const LANGS = [
+  { code: 'fr', label: '🇫🇷 FR' },
+  { code: 'en', label: '🇬🇧 EN' },
+  { code: 'de', label: '🇩🇪 DE' },
+  { code: 'lu', label: '🇱🇺 LU' },
+]
+
 export default function RegisterPage() {
   const [form, setForm] = useState({ fullName: '', email: '', password: '', confirm: '' })
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [locale, setLocale] = useState('fr')
   const supabase = createClient()
 
-  const browserLang = typeof window !== 'undefined' ? navigator.language.slice(0, 2) : 'fr'
-  const locale = ['fr', 'en', 'de', 'lu'].includes(browserLang) ? browserLang : 'fr'
+  useEffect(() => {
+    // Lire le cookie locale comme sur la page login
+    const saved = document.cookie.split(';').find(c => c.trim().startsWith('locale='))?.split('=')[1]
+    if (saved && ['fr', 'en', 'de', 'lu'].includes(saved)) {
+      setLocale(saved)
+    }
+  }, [])
+
   const t = TRANSLATIONS[locale] || TRANSLATIONS.fr
+
+  async function changeLanguage(code: string) {
+    await fetch('/api/locale', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale: code })
+    })
+    setLocale(code)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -63,7 +86,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-3">
             <div className="w-3 h-3 rounded-full bg-brand-600" />
-            <span className="text-xl font-semibold tracking-tight">DP-Differdange Events</span>
+            <span className="text-xl font-semibold tracking-tight">DP-Diff Events</span>
           </div>
           <p className="text-sm text-gray-500">{t.subtitle}</p>
         </div>
@@ -101,6 +124,17 @@ export default function RegisterPage() {
             {t.alreadyAccount}{' '}
             <Link href="/auth/login" className="text-brand-600 hover:underline font-medium">{t.login}</Link>
           </p>
+        </div>
+
+        {/* Sélecteur de langue */}
+        <div className="flex justify-center gap-2 mt-4">
+          {LANGS.map(lang => (
+            <button key={lang.code}
+              onClick={() => changeLanguage(lang.code)}
+              className={`text-xs px-2 py-1 rounded-md font-medium transition-colors ${locale === lang.code ? 'bg-brand-600 text-white' : 'text-gray-500 hover:bg-gray-100'}`}>
+              {lang.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>
