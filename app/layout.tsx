@@ -30,8 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
-              const theme = localStorage.getItem('dp-theme') || 'light';
-              document.documentElement.classList.add(theme);
+              if (!window.location.pathname.startsWith('/auth')) {
+                const theme = localStorage.getItem('dp-theme') || 'light';
+                document.documentElement.classList.add(theme);
+              }
             } catch(e) {}
           `
         }} />

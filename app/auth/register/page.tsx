@@ -70,7 +70,7 @@ export default function RegisterPage() {
   }
 
   if (done) return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white flex items-center justify-center p-4" style={{colorScheme: 'light'}}>
       <div className="card p-8 max-w-sm w-full text-center">
         <div className="text-4xl mb-4">📬</div>
         <h2 className="text-lg font-semibold mb-2">{t.pendingTitle}</h2>
@@ -81,7 +81,7 @@ export default function RegisterPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white flex items-center justify-center p-4" style={{colorScheme: 'light'}}>
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-3">
